@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "truffle": "^5.9.0"
+  },
+  "scripts": {
+    "compile": "sh compile_and_copy.sh"
   }
 }
