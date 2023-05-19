@@ -8,6 +8,7 @@ function VotingComponent() {
     const [proposals, setProposals] = useState([]);
     const [newTitle, setNewTitle] = useState('');
     const [newDescription, setNewDescription] = useState('');
+    const [signer, setSigner] = useState(null);
 
     useEffect(() => {
         async function initialize() {
@@ -17,7 +18,8 @@ function VotingComponent() {
                 try {
                     // const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     const signer = await provider.getSigner();
-                    const contract = new Contract('0x5ea9640a36a132c265b268a43D8C1f03d438fbF8', contractABI.abi, signer);
+                    setSigner(signer);
+                    const contract = new Contract('0x8d5382929635594A2e84E8a233C3d50fD4432D26', contractABI.abi, signer);
                     setContract(contract);
 
                     const count = await contract.getProposalsCount();
@@ -65,19 +67,38 @@ function VotingComponent() {
         }
     }
 
+
     async function vote(proposalId) {
+
         if (contract) {
             try {
-                const tx = await contract.vote(proposalId);
-                await tx.wait();
-                alert('Vote cast successfully!');
-                const count = await contract.getProposalsCount();
-                const proposals = [];
-                for (let i = 0; i < count; i++) {
-                    const proposal = await contract.getProposal(i);
-                    proposals.push(proposal);
+
+                const signerAddress = await signer.getAddress();
+
+                const hasUserVotedForProposal = await contract.hasVoted(proposalId, signerAddress);
+
+
+                if (!hasUserVotedForProposal) {
+
+                    const tx = await contract.vote(proposalId);
+
+                    await tx.wait();
+
+                    alert('Vote cast successfully!');
+                    const count = await contract.getProposalsCount();
+                    const proposals = [];
+                    for (let i = 0; i < count; i++) {
+                        const proposal = await contract.getProposal(i);
+                        proposals.push(proposal);
+                    }
+                    setProposals(proposals);
+
+                } else {
+                    alert("Already voted.")
                 }
-                setProposals(proposals);
+
+
+
             } catch (err) {
                 console.error('Error casting vote:', err);
             }
@@ -115,10 +136,9 @@ function VotingComponent() {
             {/* Display proposals */}
             {proposals.map((proposal, index) => (
                 <div key={index}>
-                    <h2>Proposal {index + 1}</h2>
-                    <p>Title: {proposal.title}</p>
+                    <h2>Proposal {proposal.title}</h2>
                     <p>Description: {proposal.description}</p>
-                    <p>Vote count: {proposal.voteCount}</p>
+                    <p>Vote count: {proposal.voteCount.toString()}</p>
                     <button onClick={() => vote(index)}>Vote for this proposal</button>
                 </div>
             ))}
