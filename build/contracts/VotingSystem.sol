@@ -2,6 +2,7 @@ pragma solidity ^0.8.0;
 
 contract VotingSystem {
     struct Proposal {
+        string title;
         string description;
         uint voteCount;
     }
@@ -11,7 +12,7 @@ contract VotingSystem {
     mapping(uint => mapping(address => bool)) public hasVoted;
     address public owner;
 
-    event ProposalCreated(uint proposalIndex, string description);
+    event ProposalCreated(uint proposalIndex, string title, string description);
     event Voted(uint proposalIndex, address voter);
 
     modifier onlyOwner() {
@@ -31,9 +32,14 @@ contract VotingSystem {
         owner = msg.sender;
     }
 
-    function createProposal(string memory description) public onlyOwner {
-        proposals.push(Proposal({description: description, voteCount: 0}));
-        emit ProposalCreated(proposals.length - 1, description);
+    function createProposal(
+        string memory title,
+        string memory description
+    ) public onlyOwner {
+        proposals.push(
+            Proposal({title: title, description: description, voteCount: 0})
+        );
+        emit ProposalCreated(proposals.length - 1, title, description);
     }
 
     function vote(uint proposalIndex) public proposalExists(proposalIndex) {
@@ -52,9 +58,10 @@ contract VotingSystem {
         public
         view
         proposalExists(proposalIndex)
-        returns (string memory description, uint voteCount)
+        returns (string memory title, string memory description, uint voteCount)
     {
         return (
+            proposals[proposalIndex].title,
             proposals[proposalIndex].description,
             proposals[proposalIndex].voteCount
         );
