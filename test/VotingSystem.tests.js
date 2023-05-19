@@ -10,15 +10,16 @@ contract('VotingSystem', (accounts) => {
     });
 
     it('Should create a new proposal', async () => {
-        await votingSystem.createProposal('Proposal 1', { from: owner });
+        await votingSystem.createProposal('Title 1', 'Description 1', { from: owner });
         const proposal = await votingSystem.getProposal(0);
-        assert(proposal.description === 'Proposal 1');
+        assert(proposal.title === 'Title 1');
+        assert(proposal.description === 'Description 1');
         assert(proposal.voteCount.toNumber() === 0);
     });
 
     it('Should NOT create a new proposal if not owner', async () => {
         try {
-            await votingSystem.createProposal('Proposal 2', { from: voter });
+            await votingSystem.createProposal('Title 2', 'Description 2', { from: voter });
         } catch (e) {
             assert(e.message.includes('Only the contract owner can call this function'));
             return;
