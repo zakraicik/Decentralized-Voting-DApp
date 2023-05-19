@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { ethers, Contract } from 'ethers';
 import contractABI from '../contracts/VotingSystem.json';
+import Chip from '@mui/material/Chip';
+
+import TimelineDot from '@mui/lab/TimelineDot';
+
+import { styled } from '@mui/material/styles';
+
+const SuccessChip = styled(Chip)({
+    backgroundColor: '#4caf50',
+    color: '#fff',
+});
 
 function VotingComponent() {
     const [contract, setContract] = useState(null);
@@ -10,6 +20,7 @@ function VotingComponent() {
     const [newTitle, setNewTitle] = useState('');
     const [newDescription, setNewDescription] = useState('');
     const [signerAddress, setSignerAddress] = useState(null);
+    const [accountBalance, setAccountBalance] = useState('');
 
     useEffect(() => {
         async function initialize() {
@@ -21,6 +32,10 @@ function VotingComponent() {
                     const signer = await provider.getSigner();
                     const signerAddress = await signer.getAddress();
                     setSignerAddress(signerAddress);
+
+                    const balance = await provider.getBalance(signerAddress);
+
+                    setAccountBalance(ethers.formatEther(balance));
 
                     const contract = new Contract('0x8d5382929635594A2e84E8a233C3d50fD4432D26', contractABI.abi, signer);
                     const owner = await contract.owner();
@@ -114,11 +129,11 @@ function VotingComponent() {
 
     return (
         <div>
-            <h1>Voting Component</h1>
-
-            {/* Connection status */}
             {isConnected ? (
-                <p>Connected to MetaMask</p>
+                <div style={{ position: 'fixed', top: '20px', left: '20px', padding: '10px', display: 'flex', alignItems: 'center' }}>
+                    <TimelineDot sx={{ width: '5px', height: '5px', backgroundColor: '#4caf50' }} />
+                    <p style={{ marginLeft: '5px', color: '#4caf50', fontWeight: 'bold', fontSize: '14px' }}>CONNECTED</p>
+                </div>
             ) : (
                 <p>Not connected to MetaMask</p>
             )}
