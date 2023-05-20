@@ -52,4 +52,21 @@ contract('VotingSystem', (accounts) => {
         }
         assert(false);
     });
+
+    it('Should remove the proposal and associated votes', async () => {
+        // Create a proposal
+        await votingSystem.createProposal('Title 1', 'Description 1', { from: owner });
+        const initialProposalCount = await votingSystem.getProposalsCount();
+
+
+        // // Cast a vote on the created proposal
+        await votingSystem.vote(1, { from: voter });
+
+        // // Remove the created proposal
+        await votingSystem.removeProposal(1, { from: owner });
+
+        const proposalCount = await votingSystem.getProposalsCount();
+
+        assert(initialProposalCount.toString() - proposalCount.toString() === 1);
+    });
 });

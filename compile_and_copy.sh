@@ -3,6 +3,10 @@
 # Compile the contracts
 npx truffle compile
 
+npx truffle migrate --reset
+
+npx truffle test
+
 # Create the src/contracts directory if it doesn't exist
 mkdir -p client/src/contracts
 

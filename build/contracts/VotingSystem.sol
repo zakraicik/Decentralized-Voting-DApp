@@ -13,6 +13,7 @@ contract VotingSystem {
     address public owner;
 
     event ProposalCreated(uint proposalIndex, string title, string description);
+    event ProposalRemoved(uint proposalIndex);
     event Voted(uint proposalIndex, address voter);
 
     modifier onlyOwner() {
@@ -40,6 +41,20 @@ contract VotingSystem {
             Proposal({title: title, description: description, voteCount: 0})
         );
         emit ProposalCreated(proposals.length - 1, title, description);
+    }
+
+    function removeProposal(
+        uint proposalIndex
+    ) public onlyOwner proposalExists(proposalIndex) {
+        emit ProposalRemoved(proposalIndex);
+
+        delete proposals[proposalIndex];
+
+        for (uint i = proposalIndex; i < proposals.length - 1; i++) {
+            proposals[i] = proposals[i + 1];
+        }
+
+        proposals.pop();
     }
 
     function vote(uint proposalIndex) public proposalExists(proposalIndex) {
