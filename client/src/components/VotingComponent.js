@@ -253,9 +253,10 @@ function VotingComponent() {
                         marginTop: '80px',
                     }}
                 >
+                    <img src="/logo.png" alt="Your Logo" style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%', height: 'auto', objectFit: 'contain', marginTop: '20px', marginBottom: '50px' }} />
 
                     <Stack spacing={2} >
-                        <img src="/logo.png" alt="Your Logo" style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%', height: 'auto', objectFit: 'contain' }} />
+
                         {proposals.map((proposal, index) => (
                             <Accordion key={index} style={{
                                 background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
