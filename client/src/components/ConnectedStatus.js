@@ -7,12 +7,13 @@ function ConnectedStatus({ isConnected }) {
             style={{
                 display: 'flex',
                 alignItems: 'center',
+                backgroundColor: 'transparent'
             }}
         >
             {isConnected ? (
                 <>
-                    <TimelineDot sx={{ width: '5px', height: '5px', backgroundColor: '#4caf50' }} />
-                    <p style={{ margin: '0', marginLeft: '8px', color: '#4caf50', fontWeight: 'bold', fontSize: '14px', lineHeight: '1' }}>CONNECTED</p>
+                    <TimelineDot sx={{ width: '5px', height: '5px', backgroundColor: '#73caa4' }} />
+                    <p style={{ margin: '0', marginLeft: '8px', color: '#73caa4', fontWeight: 'bold', fontSize: '14px', lineHeight: '1' }}>CONNECTED</p>
                 </>
             ) : (
                 <p>Not connected to MetaMask</p>

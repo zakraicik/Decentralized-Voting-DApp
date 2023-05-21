@@ -21,14 +21,18 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+
+
 
 const StyledSpeedDial = styled(SpeedDial)({
     position: 'fixed',
     bottom: '16px',
     right: '16px',
+
+
+
 });
-
-
 
 
 
@@ -43,14 +47,20 @@ function VotingComponent() {
     const [accountBalance, setAccountBalance] = useState('');
     const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [votingStatus, setVotingStatus] = useState({});
 
     const handleSpeedDialOpen = () => setIsSpeedDialOpen(true);
     const handleSpeedDialClose = () => setIsSpeedDialOpen(false);
 
     const openDialog = () => {
-        handleSpeedDialClose();
-        setDialogOpen(true);
-
+        if (proposals.length >= 2) {
+            openSnackbar('Maximum of 2 proposals can be added at a time.');
+        } else {
+            handleSpeedDialClose();
+            setDialogOpen(true);
+        }
     };
 
     const handleAdd = () => {
@@ -60,6 +70,18 @@ function VotingComponent() {
 
     const handleRemove = () => {
         removeProposal();
+    };
+
+    const openSnackbar = (message) => {
+        setSnackbarMessage(message);
+        setSnackbarOpen(true);
+    };
+
+    const closeSnackbar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
     };
 
     const actions = [
@@ -90,10 +112,14 @@ function VotingComponent() {
 
                     const count = await contract.getProposalsCount();
                     const proposals = [];
+                    const votingStatus = {};
                     for (let i = 0; i < count; i++) {
                         const proposal = await contract.getProposal(i);
                         proposals.push(proposal);
+                        const hasUserVotedForProposal = await contract.hasVoted(i, signerAddress);
+                        votingStatus[i] = hasUserVotedForProposal;
                     }
+                    setVotingStatus(votingStatus);
                     setProposals(proposals);
                     setIsConnected(true);
                 } catch (err) {
@@ -110,10 +136,11 @@ function VotingComponent() {
 
     async function addProposal() {
         if (contract && newTitle !== '' && newDescription !== '' && isOwner) {
+
             try {
                 const tx = await contract.createProposal(newTitle, newDescription);
                 await tx.wait();
-                alert('Proposal added successfully!');
+                openSnackbar('Proposal added successfully!');
                 setNewTitle('');
                 setNewDescription('');
 
@@ -130,10 +157,10 @@ function VotingComponent() {
                 console.error('Error adding proposal:', err);
             }
         } else if (!isOwner) {
-            alert("Only owners can add proposals")
+            openSnackbar("Only owners can add proposals")
         }
         else {
-            alert('Please enter both title and description');
+            openSnackbar('Please enter both title and description');
         }
 
 
@@ -145,7 +172,7 @@ function VotingComponent() {
                 const proposalIndex = proposals.length - 1;
                 const tx = await contract.removeProposal(proposalIndex);
                 await tx.wait();
-                alert('Proposal removed successfully!');
+                openSnackbar('Proposal removed successfully!');
 
                 const count = await contract.getProposalsCount();
                 const updatedProposals = [];
@@ -159,7 +186,7 @@ function VotingComponent() {
                 console.error('Error removing proposal:', err);
             }
         } else if (!isOwner) {
-            alert('Only owners can remove proposals');
+            openSnackbar('Only owners can remove proposals');
         }
     }
 
@@ -178,7 +205,7 @@ function VotingComponent() {
 
                     await tx.wait();
 
-                    alert('Vote cast successfully!');
+                    openSnackbar('Vote cast successfully!');
                     const count = await contract.getProposalsCount();
                     const proposals = [];
                     for (let i = 0; i < count; i++) {
@@ -188,7 +215,7 @@ function VotingComponent() {
                     setProposals(proposals);
 
                 } else {
-                    alert("Already voted.")
+                    openSnackbar("Already voted.")
                 }
 
 
@@ -200,48 +227,64 @@ function VotingComponent() {
     }
 
     return (
-        <Container maxWidth={false} disableGutters>
-            <div
-                style={{
-                    position: 'fixed',
-                    top: '20px',
-                    left: '20px',
-                    right: '20px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    zIndex: 9999,
-                }}
-            >
-                <div style={{ position: 'fixed', top: '20px', left: '20px', right: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 9999 }}>
+        <Container maxWidth={false} >
+            <Stack>
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: '20px',
+                        left: '20px',
+                        right: '20px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        zIndex: 9999,
+                        backgroundColor: 'transparent', // This will make the div's background transparent
+                    }}
+                >
                     <ConnectedStatus isConnected={isConnected} />
                     <Balance accountBalance={accountBalance} />
                 </div>
-            </div>
 
-            <Container
-                maxWidth="sm"
-                sx={{
-                    marginTop: '80px',
-                }}
-            >
-                <Stack spacing={2}>
-                    {proposals.map((proposal, index) => (
-                        <Accordion key={index}>
-                            <AccordionSummary>
-                                <Typography variant="h6">Proposal {proposal.title}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <div>
-                                    <Typography variant="body1">Description: {proposal.description}</Typography>
-                                    <Typography variant="body1">Vote count: {proposal.voteCount.toString()}</Typography>
-                                    <button onClick={() => vote(index)}>Vote for this proposal</button>
-                                </div>
-                            </AccordionDetails>
-                        </Accordion>
-                    ))}
-                </Stack>
-            </Container>
+
+                <Container
+                    maxWidth="sm"
+                    sx={{
+                        marginTop: '80px',
+                    }}
+                >
+
+                    <Stack spacing={2} >
+                        <img src="/logo.png" alt="Your Logo" style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%', height: 'auto', objectFit: 'contain' }} />
+                        {proposals.map((proposal, index) => (
+                            <Accordion key={index} style={{
+                                background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+                                color: '#fff',
+                                borderRadius: '15px',
+
+                            }}>
+                                <AccordionSummary>
+                                    <Typography variant="h6">Proposal {proposal.title}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <div>
+                                        <Typography variant="body1">Description: {proposal.description}</Typography>
+                                        <Typography variant="body1">Vote count: {proposal.voteCount.toString()}</Typography>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => vote(index)}
+                                            disabled={votingStatus[index]}
+                                        >
+                                            {votingStatus[index] ? "Already Voted" : "Vote for this proposal"}
+                                        </Button>
+                                    </div>
+                                </AccordionDetails>
+                            </Accordion>
+                        ))}
+                    </Stack>
+                </Container>
+            </Stack>
 
             <Container
                 maxWidth="sm"
@@ -292,19 +335,38 @@ function VotingComponent() {
                         onOpen={handleSpeedDialOpen}
                         open={isSpeedDialOpen}
                         direction="up"
+                        FabProps={{
+                            style: {
+                                backgroundColor: '#73caa4', // Set the desired button background color
+                            },
+                        }}
+
                     >
-                        {actions.map((action) => (
-                            <SpeedDialAction
-                                key={action.name}
-                                icon={action.icon}
-                                tooltipTitle={action.name}
-                                onClick={action.onClick}
-                            />
-                        ))}
+                        {
+                            actions.map((action) => (
+                                <SpeedDialAction
+                                    key={action.name}
+                                    icon={action.icon}
+                                    tooltipTitle={action.name}
+                                    onClick={action.onClick}
+                                />
+                            ))
+                        }
                     </StyledSpeedDial>
                 )}
             </Container>
-        </Container>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={closeSnackbar}
+                message={snackbarMessage}
+                action={
+                    <Button color="secondary" size="small" onClick={closeSnackbar}>
+                        Close
+                    </Button>
+                }
+            />
+        </Container >
     );
 }
 
