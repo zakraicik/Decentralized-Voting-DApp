@@ -21,6 +21,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 
 
@@ -50,6 +51,7 @@ function VotingComponent() {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [votingStatus, setVotingStatus] = useState({});
+
 
     const handleSpeedDialOpen = () => setIsSpeedDialOpen(true);
     const handleSpeedDialClose = () => setIsSpeedDialOpen(false);
@@ -166,10 +168,9 @@ function VotingComponent() {
 
     }
 
-    async function removeProposal() {
+    async function removeProposal(proposalIndex) {
         if (contract && isOwner) {
             try {
-                const proposalIndex = proposals.length - 1;
                 const tx = await contract.removeProposal(proposalIndex);
                 await tx.wait();
                 openSnackbar('Proposal removed successfully!');
@@ -242,7 +243,7 @@ function VotingComponent() {
                         backgroundColor: 'transparent', // This will make the div's background transparent
                     }}
                 >
-                    <ConnectedStatus isConnected={isConnected} />
+                    <ConnectedStatus isConnected={isConnected} signerAddress={signerAddress} />
                     <Balance accountBalance={accountBalance} />
                 </div>
 
@@ -259,26 +260,45 @@ function VotingComponent() {
 
                         {proposals.map((proposal, index) => (
                             <Accordion key={index} style={{
-                                background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-                                color: '#fff',
-                                borderRadius: '15px',
+                                background: '#fff',
+                                color: '#73caa4',
+
+                                border: '1px solid rgba(115, 202, 164, .3)',
+                                borderRadius: `10px`,
+                                boxShadow: '0px 0px 10px 1px rgba(115, 202, 164, .3)',
+                                fontFamily: 'Roboto, sans-serif',
 
                             }}>
-                                <AccordionSummary>
-                                    <Typography variant="h6">Proposal {proposal.title}</Typography>
+                                <AccordionSummary sx={{
+                                    background: "#3a3e45",
+                                    borderRadius: '10px 10px 0 0',
+                                }}>
+                                    <Typography variant="h6"> {proposal.title}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    <div>
-                                        <Typography variant="body1">Description: {proposal.description}</Typography>
-                                        <Typography variant="body1">Vote count: {proposal.voteCount.toString()}</Typography>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() => vote(index)}
-                                            disabled={votingStatus[index]}
-                                        >
-                                            {votingStatus[index] ? "Already Voted" : "Vote for this proposal"}
-                                        </Button>
+                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                        <div>
+                                            <Typography variant="body1">Description: {proposal.description}</Typography>
+                                            <Typography variant="body1">Vote count: {proposal.voteCount.toString()}</Typography>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={() => vote(index)}
+                                                disabled={votingStatus[index]}
+                                            >
+                                                {votingStatus[index] ? "Already Voted" : "Vote for this proposal"}
+                                            </Button>
+                                            {isOwner && (
+                                                <IconButton
+                                                    color="#3a3e45"
+                                                    onClick={() => removeProposal(index)}
+                                                >
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            )}
+                                        </div>
                                     </div>
                                 </AccordionDetails>
                             </Accordion>
