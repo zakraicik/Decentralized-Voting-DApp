@@ -25,7 +25,7 @@ import CardContent from "@mui/material/CardContent";
 import Carousel from "react-material-ui-carousel";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import Divider from '@mui/material/Divider';
+
 
 const ShimmerVoteButton = styled(Button)`
   position: relative;
@@ -305,6 +305,8 @@ function VotingComponent() {
                                             display: "flex",
                                             justifyContent: "space-between",
                                             alignItems: "center",
+                                            paddingBottom: 0,
+                                            marginBottom: 0
                                         }}
                                     >
                                         <div
@@ -336,7 +338,7 @@ function VotingComponent() {
                                                         onClick={() => removeProposal(index)}
                                                         style={{
                                                             height: "48px",
-                                                            color: "#ecf6f0",
+                                                            color: "#8a8e94",
                                                             width: "48px",
                                                             borderRadius: "50%",
                                                             display: "flex",
@@ -349,6 +351,25 @@ function VotingComponent() {
                                                 </div>
                                             )}
                                         </div>
+
+
+                                    </CardContent>
+
+                                    <CardContent
+                                        style={{ color: "#505762", }}
+                                    >
+                                        <Typography variant="body1">
+                                            {proposal.description}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            position: "relative",
+                                        }}
+                                    >
                                         <div
                                             style={{
                                                 display: "flex",
@@ -363,37 +384,19 @@ function VotingComponent() {
                                                 {proposal.voteCount.toString()}
                                             </span>
                                         </div>
-                                    </CardContent>
-                                    {/* <Divider style={{ margin: '0 auto' }} /> */}
-                                    <CardContent
-                                        style={{ color: "#505762", marginBottom: "25px" }}
-                                    >
-                                        <Typography variant="body1">
-                                            {proposal.description}
-                                        </Typography>
-                                    </CardContent>
-                                    <CardActions
-                                        style={{
-                                            display: "flex",
-                                            justifyContent: "flex-end", // Add this
-                                            alignItems: "flex-end", // Change this
-                                            position: "relative",
-                                        }}
-                                    >
+
                                         <ShimmerVoteButton
                                             variant="contained"
                                             color="primary"
                                             onClick={() => vote(index)}
                                             disabled={votingStatus[index]}
                                             style={{
-                                                backgroundColor: "#48c9a9", // Set the desired button background color
+                                                backgroundColor: "#48c9a9",
                                                 color: "#fff",
-
                                             }}
                                         >
                                             {votingStatus[index] ? "Already Support" : "I support"}
                                         </ShimmerVoteButton>
-
                                     </CardActions>
                                 </Card>
                             ))}
