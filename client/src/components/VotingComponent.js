@@ -5,9 +5,7 @@ import Container from '@mui/material/Container';
 import ConnectedStatus from './ConnectedStatus';
 import Balance from './Balance';
 import Stack from '@mui/material/Stack';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
+
 import Typography from '@mui/material/Typography';
 import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
@@ -24,7 +22,11 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-
+import '@fontsource/roboto';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Carousel from 'react-material-ui-carousel'
 
 
 
@@ -289,64 +291,54 @@ function VotingComponent() {
 
                     <Stack spacing={2} >
 
-                        {proposals.map((proposal, index) => (
-                            <Accordion
-                                key={index}
-                                style={{
-                                    background: '#fff',
-                                    color: '#ffffff',
-                                    borderRadius: `10px`,
-                                    fontFamily: 'Roboto, sans-serif',
-                                }}
-                            >
-                                <AccordionSummary
-                                    sx={{
-                                        background: "#ffffff",
+                        <Carousel autoPlay={false} indicators={false}>
+                            {proposals.map((proposal, index) => (
+                                <Card
+                                    key={index}
+                                    style={{
+                                        background: '#fff',
+                                        color: '#ffffff',
                                         borderRadius: '10px',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        boxShadow: '0px 0px 20px 3px rgba(115, 202, 164, .3)'
+                                        boxShadow: '0px 0px 10px 1px rgba(115, 202, 164, .3)',
+                                        fontFamily: 'Roboto, sans-serif',
                                     }}
                                 >
-                                    <div style={{ color: '#37b78c', display: 'flex', alignItems: 'center', flexBasis: '0', flexGrow: 1 }}>
-                                        <Typography variant="h6" style={{ textTransform: 'uppercase' }}>{proposal.title}</Typography>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
-                                        <LocalFireDepartmentIcon style={{ color: '#fc9847', marginLeft: '5px' }} />
-                                        <span style={{ color: '#fc9847', marginLeft: '5px' }}>{proposal.voteCount.toString()}</span>
-                                    </div>
-                                </AccordionSummary>
-                                <AccordionDetails>
-                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                                        <div style={{ marginBottom: '25px', color: '#505762' }}>
-                                            <Typography variant="body1">{proposal.description}</Typography>
+                                    <CardContent style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ color: '#37b78c', display: 'flex', alignItems: 'center', flexBasis: '0', flexGrow: 1 }}>
+                                            <Typography style={{ fontSize: '24px', letterSpacing: '0.1em', fontFamily: 'Roboto, sans-serif', textTransform: 'uppercase', }}>{proposal.title}</Typography>
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
-                                            <ShimmerVoteButton
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() => vote(index)}
-                                                disabled={votingStatus[index]}
-                                                style={{
-                                                    backgroundColor: '#84d7b8',
-                                                    color: '#ffffff',
-                                                }}
-                                            >
-                                                {votingStatus[index] ? 'Already Support' : 'I support'}
-                                            </ShimmerVoteButton>
-                                            {isOwner && (
-                                                <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
-                                                    <IconButton color="#3a3e45" onClick={() => removeProposal(index)}>
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                </div>
-                                            )}
+                                        <div style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                                            <LocalFireDepartmentIcon style={{ color: '#fc9847', marginLeft: '5px' }} />
+                                            <span style={{ color: '#fc9847', marginLeft: '5px' }}>{proposal.voteCount.toString()}</span>
                                         </div>
-                                    </div>
-                                </AccordionDetails>
-                            </Accordion>
-                        ))}
+                                    </CardContent>
+                                    <CardContent style={{ color: '#505762', marginBottom: '25px' }}>
+                                        <Typography variant="body1">{proposal.description}</Typography>
+                                    </CardContent>
+                                    <CardActions style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                                        <ShimmerVoteButton
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => vote(index)}
+                                            disabled={votingStatus[index]}
+                                            style={{
+                                                backgroundColor: '#84d7b8',
+                                                color: '#ffffff',
+                                            }}
+                                        >
+                                            {votingStatus[index] ? 'Already Support' : 'I support'}
+                                        </ShimmerVoteButton>
+                                        {isOwner && (
+                                            <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
+                                                <IconButton color="#3a3e45" onClick={() => removeProposal(index)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </div>
+                                        )}
+                                    </CardActions>
+                                </Card>
+                            ))}
+                        </Carousel>
                     </Stack>
                 </Container>
             </Stack>
