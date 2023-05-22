@@ -465,7 +465,7 @@ function VotingComponent() {
 
                                                     }}
                                                 >
-                                                    {votingStatus[index] ? "Already Support" : "I support"}
+                                                    {votingStatus[index] ? "Already Voted" : "Vote"}
                                                 </ShimmerVoteButton>
                                             </CardActions>
                                         </Card>
@@ -487,7 +487,7 @@ function VotingComponent() {
                 }}
             >
                 <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-                    <DialogTitle>Add a Proposal</DialogTitle>
+                    <DialogTitle style={{ color: "#37b78c" }}>Add a Proposal </DialogTitle>
                     <DialogContent>
                         <TextField
                             autoFocus
