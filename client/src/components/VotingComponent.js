@@ -23,6 +23,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 
 
 
@@ -279,8 +280,8 @@ function VotingComponent() {
                                 <AccordionDetails>
                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                                         <div>
-                                            <Typography variant="body1">Description: {proposal.description}</Typography>
-                                            <Typography variant="body1">Vote count: {proposal.voteCount.toString()}</Typography>
+                                            <Typography variant="body1">{proposal.description}</Typography>
+
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                                             <Button
@@ -289,8 +290,9 @@ function VotingComponent() {
                                                 onClick={() => vote(index)}
                                                 disabled={votingStatus[index]}
                                             >
-                                                {votingStatus[index] ? "Already Voted" : "Vote for this proposal"}
+                                                {votingStatus[index] ? "Already Support" : "I support"}
                                             </Button>
+                                            <LocalFireDepartmentIcon style={{ padding: 0, color: '#fc9847' }}></LocalFireDepartmentIcon> {proposal.voteCount.toString()}
                                             {isOwner && (
                                                 <IconButton
                                                     color="#3a3e45"
