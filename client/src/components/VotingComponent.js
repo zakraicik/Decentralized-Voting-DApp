@@ -1,56 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { ethers, Contract } from 'ethers';
-import contractABI from '../contracts/VotingSystem.json';
-import Container from '@mui/material/Container';
-import ConnectedStatus from './ConnectedStatus';
-import Balance from './Balance';
-import Stack from '@mui/material/Stack';
+import React, { useState, useEffect } from "react";
+import { ethers, Contract } from "ethers";
+import contractABI from "../contracts/VotingSystem.json";
+import Container from "@mui/material/Container";
+import ConnectedStatus from "./ConnectedStatus";
+import Balance from "./Balance";
+import Stack from "@mui/material/Stack";
 
-import Typography from '@mui/material/Typography';
-import SpeedDial from '@mui/material/SpeedDial';
-import SpeedDialIcon from '@mui/material/SpeedDialIcon';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
-import { styled } from '@mui/material/styles';
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Snackbar from '@mui/material/Snackbar';
-import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
-import '@fontsource/roboto';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Carousel from 'react-material-ui-carousel'
-
-
-
-const StyledSpeedDial = styled(SpeedDial)({
-    position: 'fixed',
-    bottom: '16px',
-    right: '16px',
-
-});
-
-
+import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Snackbar from "@mui/material/Snackbar";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import "@fontsource/roboto";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Carousel from "react-material-ui-carousel";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import Divider from '@mui/material/Divider';
 
 const ShimmerVoteButton = styled(Button)`
   position: relative;
   overflow: hidden;
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: -50%;
     width: 200%;
     height: 100%;
-    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
     background-size: 200% 100%;
     animation: shimmer 5s infinite linear;
   }
@@ -65,42 +58,28 @@ const ShimmerVoteButton = styled(Button)`
   }
 `;
 
-
 function VotingComponent() {
     const [contract, setContract] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
     const [proposals, setProposals] = useState([]);
-    const [newTitle, setNewTitle] = useState('');
-    const [newDescription, setNewDescription] = useState('');
+    const [newTitle, setNewTitle] = useState("");
+    const [newDescription, setNewDescription] = useState("");
     const [signerAddress, setSignerAddress] = useState(null);
-    const [accountBalance, setAccountBalance] = useState('');
-    const [isSpeedDialOpen, setIsSpeedDialOpen] = useState(false);
+    const [accountBalance, setAccountBalance] = useState("");
+
     const [dialogOpen, setDialogOpen] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [votingStatus, setVotingStatus] = useState({});
 
-
-    const handleSpeedDialOpen = () => setIsSpeedDialOpen(true);
-    const handleSpeedDialClose = () => setIsSpeedDialOpen(false);
-
     const openDialog = () => {
-        if (proposals.length >= 2) {
-            openSnackbar('Maximum of 2 proposals can be added at a time.');
-        } else {
-            handleSpeedDialClose();
-            setDialogOpen(true);
-        }
+        setDialogOpen(true);
     };
 
     const handleAdd = () => {
         addProposal();
         setDialogOpen(false);
-    };
-
-    const handleRemove = () => {
-        removeProposal();
     };
 
     const openSnackbar = (message) => {
@@ -109,16 +88,11 @@ function VotingComponent() {
     };
 
     const closeSnackbar = (event, reason) => {
-        if (reason === 'clickaway') {
+        if (reason === "clickaway") {
             return;
         }
         setSnackbarOpen(false);
     };
-
-    const actions = [
-        { icon: <SaveIcon />, name: 'Add Proposal', onClick: openDialog },
-        ...(proposals.length > 0 ? [{ icon: <DeleteIcon />, name: 'Remove Proposal', onClick: handleRemove }] : []),
-    ];
 
     useEffect(() => {
         async function initialize() {
@@ -135,7 +109,11 @@ function VotingComponent() {
 
                     setAccountBalance(ethers.formatEther(balance));
 
-                    const contract = new Contract('0x6567c84fDf23c0a54585320a9a9048EA8a45eB37', contractABI.abi, signer);
+                    const contract = new Contract(
+                        "0x6567c84fDf23c0a54585320a9a9048EA8a45eB37",
+                        contractABI.abi,
+                        signer
+                    );
                     const owner = await contract.owner();
 
                     setIsOwner(signerAddress === owner);
@@ -147,7 +125,10 @@ function VotingComponent() {
                     for (let i = 0; i < count; i++) {
                         const proposal = await contract.getProposal(i);
                         proposals.push(proposal);
-                        const hasUserVotedForProposal = await contract.hasVoted(i, signerAddress);
+                        const hasUserVotedForProposal = await contract.hasVoted(
+                            i,
+                            signerAddress
+                        );
                         votingStatus[i] = hasUserVotedForProposal;
                     }
                     setVotingStatus(votingStatus);
@@ -158,7 +139,7 @@ function VotingComponent() {
                     setIsConnected(false);
                 }
             } else {
-                console.error('Please install MetaMask!');
+                console.error("Please install MetaMask!");
                 setIsConnected(false);
             }
         }
@@ -166,14 +147,13 @@ function VotingComponent() {
     }, []);
 
     async function addProposal() {
-        if (contract && newTitle !== '' && newDescription !== '' && isOwner) {
-
+        if (contract && newTitle !== "" && newDescription !== "" && isOwner) {
             try {
                 const tx = await contract.createProposal(newTitle, newDescription);
                 await tx.wait();
-                openSnackbar('Proposal added successfully!');
-                setNewTitle('');
-                setNewDescription('');
+                openSnackbar("Proposal added successfully!");
+                setNewTitle("");
+                setNewDescription("");
 
                 const count = await contract.getProposalsCount();
                 const proposals = [];
@@ -182,19 +162,14 @@ function VotingComponent() {
                     proposals.push(proposal);
                 }
                 setProposals(proposals);
-                setIsSpeedDialOpen(false);
-
             } catch (err) {
-                console.error('Error adding proposal:', err);
+                console.error("Error adding proposal:", err);
             }
         } else if (!isOwner) {
-            openSnackbar("Only owners can add proposals")
+            openSnackbar("Only owners can add proposals");
+        } else {
+            openSnackbar("Please enter both title and description");
         }
-        else {
-            openSnackbar('Please enter both title and description');
-        }
-
-
     }
 
     async function removeProposal(proposalIndex) {
@@ -202,7 +177,7 @@ function VotingComponent() {
             try {
                 const tx = await contract.removeProposal(proposalIndex);
                 await tx.wait();
-                openSnackbar('Proposal removed successfully!');
+                openSnackbar("Proposal removed successfully!");
 
                 const count = await contract.getProposalsCount();
                 const updatedProposals = [];
@@ -211,26 +186,30 @@ function VotingComponent() {
                 for (let i = 0; i < count; i++) {
                     const proposal = await contract.getProposal(i);
                     updatedProposals.push(proposal);
-                    const hasUserVotedForProposal = await contract.hasVoted(i, signerAddress);
+                    const hasUserVotedForProposal = await contract.hasVoted(
+                        i,
+                        signerAddress
+                    );
                     updatedVotingStatus[i] = hasUserVotedForProposal;
                 }
 
                 setProposals(updatedProposals);
                 setVotingStatus(updatedVotingStatus); // Update the votingStatus state
-                setIsSpeedDialOpen(false);
             } catch (err) {
-                console.error('Error removing proposal:', err);
+                console.error("Error removing proposal:", err);
             }
         } else if (!isOwner) {
-            openSnackbar('Only owners can remove proposals');
+            openSnackbar("Only owners can remove proposals");
         }
     }
-
 
     async function vote(proposalId) {
         if (contract) {
             try {
-                const hasUserVotedForProposal = await contract.hasVoted(proposalId, signerAddress);
+                const hasUserVotedForProposal = await contract.hasVoted(
+                    proposalId,
+                    signerAddress
+                );
 
                 if (!hasUserVotedForProposal) {
                     const tx = await contract.vote(proposalId);
@@ -238,12 +217,12 @@ function VotingComponent() {
                     await tx.wait();
 
                     // Update the votingStatus state to reflect the new vote
-                    setVotingStatus(prevVotingStatus => ({
+                    setVotingStatus((prevVotingStatus) => ({
                         ...prevVotingStatus,
-                        [proposalId]: true
+                        [proposalId]: true,
                     }));
 
-                    openSnackbar('Vote cast successfully!');
+                    openSnackbar("Vote cast successfully!");
                     const count = await contract.getProposalsCount();
                     const proposals = [];
                     for (let i = 0; i < count; i++) {
@@ -252,89 +231,169 @@ function VotingComponent() {
                     }
                     setProposals(proposals);
                 } else {
-                    openSnackbar("Already voted.")
+                    openSnackbar("Already voted.");
                 }
             } catch (err) {
-                console.error('Error casting vote:', err);
+                console.error("Error casting vote:", err);
             }
         }
     }
 
     return (
-        <Container maxWidth={false} >
+        <Container maxWidth={false}>
             <Stack>
                 <div
                     style={{
-                        position: 'fixed',
-                        top: '20px',
-                        left: '20px',
-                        right: '20px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+                        position: "fixed",
+                        top: "20px",
+                        left: "20px",
+                        right: "20px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                         zIndex: 9999,
-                        backgroundColor: 'transparent', // This will make the div's background transparent
+                        backgroundColor: "transparent", // This will make the div's background transparent
                     }}
                 >
-                    <ConnectedStatus isConnected={isConnected} signerAddress={signerAddress} />
+                    <ConnectedStatus
+                        isConnected={isConnected}
+                        signerAddress={signerAddress}
+                    />
                     <Balance accountBalance={accountBalance} />
                 </div>
-
 
                 <Container
                     maxWidth="sm"
                     sx={{
-                        marginTop: '80px',
+                        marginTop: "80px",
                     }}
                 >
-                    <img src="/logo.png" alt="Your Logo" style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto', width: '50%', height: 'auto', objectFit: 'contain', marginTop: '20px', marginBottom: '50px' }} />
+                    <img
+                        src="/logo.png"
+                        alt="Your Logo"
+                        style={{
+                            display: "block",
+                            marginLeft: "auto",
+                            marginRight: "auto",
+                            width: "50%",
+                            height: "auto",
+                            objectFit: "contain",
+                            marginTop: "20px",
+                            marginBottom: "50px",
+                        }}
+                    />
 
-                    <Stack spacing={2} >
-
-                        <Carousel autoPlay={false} indicators={false}>
+                    <Stack
+                        spacing={2}
+                        style={{ boxShadow: "0px 0px 25px 6px rgba(115, 202, 164, .3)" }}
+                    >
+                        <Carousel
+                            autoPlay={false}
+                            indicators={false}
+                            style={{ borderRadius: "10px" }}
+                        >
                             {proposals.map((proposal, index) => (
                                 <Card
                                     key={index}
                                     style={{
-                                        background: '#fff',
-                                        color: '#ffffff',
-                                        borderRadius: '10px',
-                                        boxShadow: '0px 0px 10px 1px rgba(115, 202, 164, .3)',
-                                        fontFamily: 'Roboto, sans-serif',
+                                        color: "#ffffff",
+                                        fontFamily: "Roboto, sans-serif",
                                     }}
                                 >
-                                    <CardContent style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ color: '#37b78c', display: 'flex', alignItems: 'center', flexBasis: '0', flexGrow: 1 }}>
-                                            <Typography style={{ fontSize: '24px', letterSpacing: '0.1em', fontFamily: 'Roboto, sans-serif', textTransform: 'uppercase', }}>{proposal.title}</Typography>
+                                    <CardContent
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                color: "#37b78c",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                flexBasis: "0",
+                                                flexGrow: 1,
+                                            }}
+                                        >
+                                            <Typography
+                                                style={{
+                                                    fontSize: "24px",
+                                                    letterSpacing: "0.1em",
+                                                    fontFamily: "Roboto, sans-serif",
+                                                    textTransform: "uppercase",
+                                                    fontWeight: 900,
+                                                }}
+                                            >
+                                                {proposal.title}
+                                            </Typography>
+                                            {isOwner && (
+                                                <div
+                                                    style={{ position: "relative", bottom: 0, right: 0, zIndex: 10000 }}
+                                                >
+                                                    <IconButton
+
+                                                        onClick={() => removeProposal(index)}
+                                                        style={{
+                                                            height: "48px",
+                                                            color: "#ecf6f0",
+                                                            width: "48px",
+                                                            borderRadius: "50%",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
+                                                        }}
+                                                    >
+                                                        <DeleteIcon style={{ fontSize: "25px" }} />
+                                                    </IconButton>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
-                                            <LocalFireDepartmentIcon style={{ color: '#fc9847', marginLeft: '5px' }} />
-                                            <span style={{ color: '#fc9847', marginLeft: '5px' }}>{proposal.voteCount.toString()}</span>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            <LocalFireDepartmentIcon
+                                                style={{ color: "#fc9847", marginLeft: "5px" }}
+                                            />
+                                            <span style={{ color: "#fc9847", marginLeft: "5px" }}>
+                                                {proposal.voteCount.toString()}
+                                            </span>
                                         </div>
                                     </CardContent>
-                                    <CardContent style={{ color: '#505762', marginBottom: '25px' }}>
-                                        <Typography variant="body1">{proposal.description}</Typography>
+                                    {/* <Divider style={{ margin: '0 auto' }} /> */}
+                                    <CardContent
+                                        style={{ color: "#505762", marginBottom: "25px" }}
+                                    >
+                                        <Typography variant="body1">
+                                            {proposal.description}
+                                        </Typography>
                                     </CardContent>
-                                    <CardActions style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                                    <CardActions
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "flex-end", // Add this
+                                            alignItems: "flex-end", // Change this
+                                            position: "relative",
+                                        }}
+                                    >
                                         <ShimmerVoteButton
                                             variant="contained"
                                             color="primary"
                                             onClick={() => vote(index)}
                                             disabled={votingStatus[index]}
                                             style={{
-                                                backgroundColor: '#84d7b8',
-                                                color: '#ffffff',
+                                                backgroundColor: "#48c9a9", // Set the desired button background color
+                                                color: "#fff",
+
                                             }}
                                         >
-                                            {votingStatus[index] ? 'Already Support' : 'I support'}
+                                            {votingStatus[index] ? "Already Support" : "I support"}
                                         </ShimmerVoteButton>
-                                        {isOwner && (
-                                            <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
-                                                <IconButton color="#3a3e45" onClick={() => removeProposal(index)}>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </div>
-                                        )}
+
                                     </CardActions>
                                 </Card>
                             ))}
@@ -346,10 +405,10 @@ function VotingComponent() {
             <Container
                 maxWidth="sm"
                 sx={{
-                    marginTop: '80px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+                    marginTop: "80px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                 }}
             >
                 <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
@@ -363,7 +422,7 @@ function VotingComponent() {
                             fullWidth
                             variant="standard"
                             value={newTitle}
-                            onChange={e => setNewTitle(e.target.value)}
+                            onChange={(e) => setNewTitle(e.target.value)}
                         />
                         <TextField
                             margin="dense"
@@ -372,7 +431,7 @@ function VotingComponent() {
                             fullWidth
                             variant="standard"
                             value={newDescription}
-                            onChange={e => setNewDescription(e.target.value)}
+                            onChange={(e) => setNewDescription(e.target.value)}
                         />
                     </DialogContent>
                     <DialogActions>
@@ -382,35 +441,23 @@ function VotingComponent() {
                 </Dialog>
 
                 {isOwner && (
-
-
-
-                    <StyledSpeedDial
-                        ariaLabel="SpeedDial"
-                        icon={<SpeedDialIcon />}
-                        onClose={handleSpeedDialClose}
-                        onOpen={handleSpeedDialOpen}
-                        open={isSpeedDialOpen}
-                        direction="up"
-                        FabProps={{
-                            style: {
-                                backgroundColor: '#73caa4', // Set the desired button background color
-                            },
+                    <Fab
+                        color="primary"
+                        aria-label="add"
+                        style={{
+                            position: "fixed", // Here we use fixed positioning
+                            bottom: "1rem", // Offset from the bottom
+                            right: "1rem", // Offset from the right
+                            backgroundColor: "#48c9a9", // Set the desired button background color
+                            color: "#fff"
                         }}
-
+                        onClick={openDialog} // Add your own logic here
                     >
-                        {
-                            actions.map((action) => (
-                                <SpeedDialAction
-                                    key={action.name}
-                                    icon={action.icon}
-                                    tooltipTitle={action.name}
-                                    onClick={action.onClick}
-                                />
-                            ))
-                        }
-                    </StyledSpeedDial>
+                        <AddIcon />
+                    </Fab>
+
                 )}
+
             </Container>
             <Snackbar
                 open={snackbarOpen}
@@ -423,7 +470,7 @@ function VotingComponent() {
                     </Button>
                 }
             />
-        </Container >
+        </Container>
     );
 }
 
