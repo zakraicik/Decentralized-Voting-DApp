@@ -25,12 +25,13 @@ import CardContent from "@mui/material/CardContent";
 import Carousel from "react-material-ui-carousel";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import { Divider } from "@mui/material";
+
 
 
 const ShimmerVoteButton = styled(Button)`
   position: relative;
   overflow: hidden;
+  
 
   &:after {
     content: "";
@@ -68,11 +69,12 @@ function VotingComponent() {
     const [newDescription, setNewDescription] = useState("");
     const [signerAddress, setSignerAddress] = useState(null);
     const [accountBalance, setAccountBalance] = useState("");
-
     const [dialogOpen, setDialogOpen] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [votingStatus, setVotingStatus] = useState({});
+    const [currentSlide, setCurrentSlide] = useState(0);
+
 
     const openDialog = () => {
         setDialogOpen(true);
@@ -171,6 +173,8 @@ function VotingComponent() {
                     proposals.push(proposal);
                 }
                 setProposals(proposals);
+                setCurrentSlide(count);
+
             } catch (err) {
                 console.error("Error adding proposal:", err);
             }
@@ -204,6 +208,14 @@ function VotingComponent() {
 
                 setProposals(updatedProposals);
                 setVotingStatus(updatedVotingStatus); // Update the votingStatus state
+
+
+                if (proposalIndex > 0) {
+                    setCurrentSlide(proposalIndex - 1);
+                } else {
+                    setCurrentSlide(0);
+                }
+
             } catch (err) {
                 console.error("Error removing proposal:", err);
             }
@@ -294,143 +306,174 @@ function VotingComponent() {
                         }}
                     />
 
-                    <Container sx={{
-                        overflow: "visible",
-                        boxShadow: '0px 0px 25px 2px rgba(115, 202, 164, .3)',
-                        margin: 0,
-                        padding: 0,
-
-                    }}>
-                        <Carousel
-                            autoPlay={false}
-                            indicators={false}
-
-
+                    {proposals.length === 0 ? (
+                        <div
+                            style={{
+                                color: "#37b78c",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexBasis: "0",
+                                flexGrow: 1,
+                            }}
                         >
+                            <Typography
+                                style={{
+                                    fontSize: "24px",
+                                    letterSpacing: "0.1em",
+                                    fontFamily: "Roboto, sans-serif",
+                                    textTransform: "uppercase",
+                                    fontWeight: 900,
+                                    color: "#37b78c",
+                                    textAlign: 'center'
+                                }}
+                            >
+                                There are currently no proposals
+                            </Typography>
+                        </div>
+                    ) : (
+                        <Container sx={{
+                            overflow: "visible",
+                            boxShadow: '0px 0px 25px 2px rgba(115, 202, 164, .3)',
+                            margin: 0,
+                            padding: 0,
 
-                            {
-                                proposals.map((proposal, index) => (
-                                    <Card
-                                        key={index}
-                                        variant="outlined"
-                                        style={{
-                                            color: "#ffffff",
-                                            fontFamily: "Roboto, sans-serif",
-                                            borderColor: "#f5faf8",
+                        }}>
 
+                            <Carousel
+                                autoPlay={false}
+                                indicators={false}
+                                index={currentSlide}
+                                onChange={(index,) => setCurrentSlide(index)}
 
-                                        }}
-                                    >
-                                        <CardContent
+                            >
+
+                                {
+                                    proposals.map((proposal, index) => (
+                                        <Card
+                                            key={index}
+                                            variant="outlined"
                                             style={{
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                                paddingBottom: 0,
-                                                marginBottom: 0,
+                                                color: "#ffffff",
+                                                fontFamily: "Roboto, sans-serif",
+                                                borderColor: "#f5faf8",
 
 
                                             }}
                                         >
-                                            <div
+                                            <CardContent
                                                 style={{
-                                                    color: "#37b78c",
                                                     display: "flex",
+                                                    justifyContent: "space-between",
                                                     alignItems: "center",
-                                                    flexBasis: "0",
-                                                    flexGrow: 1,
+                                                    paddingBottom: 0,
+                                                    marginBottom: 0,
+
 
                                                 }}
                                             >
-                                                <Typography
+                                                <div
                                                     style={{
-                                                        fontSize: "24px",
-                                                        letterSpacing: "0.1em",
-                                                        fontFamily: "Roboto, sans-serif",
-                                                        textTransform: "uppercase",
-                                                        fontWeight: 900,
+                                                        color: "#37b78c",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        flexBasis: "0",
+                                                        flexGrow: 1,
+
                                                     }}
                                                 >
-                                                    {proposal.title}
-                                                </Typography>
-                                                {isOwner && (
-                                                    <div
-                                                        style={{ position: "relative", bottom: 0, right: 0, zIndex: 10000 }}
+                                                    <Typography
+                                                        style={{
+                                                            fontSize: "24px",
+                                                            letterSpacing: "0.1em",
+                                                            fontFamily: "Roboto, sans-serif",
+                                                            textTransform: "uppercase",
+                                                            fontWeight: 900,
+                                                        }}
                                                     >
-                                                        <IconButton
-
-                                                            onClick={() => removeProposal(index)}
-                                                            style={{
-                                                                height: "48px",
-                                                                color: "#8a8e94",
-                                                                width: "48px",
-                                                                borderRadius: "50%",
-                                                                display: "flex",
-                                                                alignItems: "center",
-                                                                justifyContent: "center",
-                                                            }}
+                                                        {proposal.title}
+                                                    </Typography>
+                                                    {isOwner && (
+                                                        <div
+                                                            style={{ position: "relative", bottom: 0, right: 0, zIndex: 10000 }}
                                                         >
-                                                            <DeleteIcon style={{ fontSize: "25px" }} />
-                                                        </IconButton>
-                                                    </div>
-                                                )}
-                                            </div>
+                                                            <IconButton
+
+                                                                onClick={() => removeProposal(index)}
+                                                                style={{
+                                                                    height: "48px",
+                                                                    color: "#8a8e94",
+                                                                    width: "48px",
+                                                                    borderRadius: "50%",
+                                                                    display: "flex",
+                                                                    alignItems: "center",
+                                                                    justifyContent: "center",
+
+                                                                }}
+                                                            >
+                                                                <DeleteIcon style={{ fontSize: "25px" }} />
+                                                            </IconButton>
+                                                        </div>
+                                                    )}
+                                                </div>
 
 
-                                        </CardContent>
+                                            </CardContent>
 
 
 
-                                        <CardContent
-                                            style={{ color: "#505762", fontFamily: "Roboto, sans-serif" }}
-                                        >
-                                            <Typography sx={{ fontFamily: "Roboto, sans-serif" }}>
-                                                {proposal.description}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions
-                                            style={{
-                                                display: "flex",
-                                                justifyContent: "space-between",
-                                                alignItems: "center",
-                                                position: "relative",
-                                            }}
-                                        >
-                                            <div
+                                            <CardContent
+                                                style={{ color: "#505762", fontFamily: "Roboto, sans-serif" }}
+                                            >
+                                                <Typography sx={{ fontFamily: "Roboto, sans-serif" }}>
+                                                    {proposal.description}
+                                                </Typography>
+                                            </CardContent>
+                                            <CardActions
                                                 style={{
                                                     display: "flex",
+                                                    justifyContent: "space-between",
                                                     alignItems: "center",
-                                                    fontWeight: 600,
+                                                    position: "relative",
                                                 }}
                                             >
-                                                <LocalFireDepartmentIcon
-                                                    style={{ color: "#fc9847", marginLeft: "5px" }}
-                                                />
-                                                <span style={{ color: "#fc9847", marginLeft: "5px" }}>
-                                                    {proposal.voteCount.toString()}
-                                                </span>
-                                            </div>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    <LocalFireDepartmentIcon
+                                                        style={{ color: "#fc9847", marginLeft: "5px" }}
+                                                    />
+                                                    <span style={{ color: "#fc9847", marginLeft: "5px" }}>
+                                                        {proposal.voteCount.toString()}
+                                                    </span>
+                                                </div>
 
-                                            <ShimmerVoteButton
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() => vote(index)}
-                                                disabled={votingStatus[index]}
-                                                style={{
-                                                    backgroundColor: "#48c9a9",
-                                                    color: "#fff",
-                                                    animation: votingStatus[index] ? "none" : undefined, // Disable animation when disabled
-                                                }}
-                                            >
-                                                {votingStatus[index] ? "Already Support" : "I support"}
-                                            </ShimmerVoteButton>
-                                        </CardActions>
-                                    </Card>
-                                ))
-                            }
+                                                <ShimmerVoteButton
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => vote(index)}
+                                                    disabled={votingStatus[index]}
+                                                    style={{
+                                                        backgroundColor: votingStatus[index] ? "#D3D3D3" : "#48c9a9",
+                                                        color: "#fff",
+                                                        opacity: votingStatus[index] ? 0.5 : 1, // Reduce opacity when disabled
+                                                        cursor: votingStatus[index] ? "not-allowed" : "pointer", // Change cursor when disabled
 
-                        </Carousel>
-                    </Container>
+                                                    }}
+                                                >
+                                                    {votingStatus[index] ? "Already Support" : "I support"}
+                                                </ShimmerVoteButton>
+                                            </CardActions>
+                                        </Card>
+                                    ))
+                                }
+
+                            </Carousel>
+                        </Container>)}
                 </Container>
             </Stack >
 
