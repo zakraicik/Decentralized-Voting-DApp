@@ -11,10 +11,15 @@ contract('VotingSystem', (accounts) => {
 
     it('Should create a new proposal', async () => {
         await votingSystem.createProposal('Title 1', 'Description 1', { from: owner });
-        const proposal = await votingSystem.getProposal(0);
-        assert(proposal.title === 'Title 1');
-        assert(proposal.description === 'Description 1');
-        assert(proposal.voteCount.toNumber() === 0);
+        await votingSystem.createProposal('Title 2', 'Description 2', { from: owner });
+        const proposal1 = await votingSystem.getProposal(0);
+        const proposal2 = await votingSystem.getProposal(1);
+        assert(proposal1.title === 'Title 1');
+        assert(proposal1.description === 'Description 1');
+        assert(proposal1.voteCount.toNumber() === 0);
+        assert(proposal2.title === 'Title 2');
+        assert(proposal2.description === 'Description 2');
+        assert(proposal2.voteCount.toNumber() === 0);
     });
 
     it('Should NOT create a new proposal if not owner', async () => {
@@ -24,7 +29,7 @@ contract('VotingSystem', (accounts) => {
             assert(e.message.includes('Only the contract owner can call this function'));
             return;
         }
-        assert(false);
+        assert(fsalse);
     });
 
     it('Should increment the vote count', async () => {
@@ -53,20 +58,30 @@ contract('VotingSystem', (accounts) => {
         assert(false);
     });
 
-    it('Should remove the proposal and associated votes', async () => {
-        // Create a proposal
-        await votingSystem.createProposal('Title 1', 'Description 1', { from: owner });
-        const initialProposalCount = await votingSystem.getProposalsCount();
+    it('Should reassign hasVoted mappings when a proposal is removed', async () => {
+        await votingSystem.createProposal('Title Y', 'Description A', { from: owner });
+        await votingSystem.createProposal('Title Z', 'Description B', { from: owner });
 
+        const countBN = await votingSystem.getProposalsCount();
+        const count = countBN.toNumber();
 
-        // // Cast a vote on the created proposal
-        await votingSystem.vote(1, { from: voter });
+        const voter2 = accounts[2];
 
-        // // Remove the created proposal
-        await votingSystem.removeProposal(1, { from: owner });
+        await votingSystem.vote(2, { from: owner });
 
-        const proposalCount = await votingSystem.getProposalsCount();
+        await votingSystem.vote(3, { from: voter2 });
 
-        assert(initialProposalCount.toString() - proposalCount.toString() === 1);
+        await votingSystem.removeProposal(2, { from: owner });
+
+        const new_countBN = await votingSystem.getProposalsCount();
+        const new_count = new_countBN.toNumber();
+
+        await votingSystem.vote(2, { from: owner });
+
+        const proposal = await votingSystem.getProposal(2);
+
+        assert(count - 1 === new_count)
+        assert(proposal.voteCount.toNumber() === 2);
+
     });
 });

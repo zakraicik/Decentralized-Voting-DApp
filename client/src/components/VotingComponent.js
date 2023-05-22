@@ -31,8 +31,6 @@ const StyledSpeedDial = styled(SpeedDial)({
     bottom: '16px',
     right: '16px',
 
-
-
 });
 
 
@@ -106,7 +104,7 @@ function VotingComponent() {
 
                     setAccountBalance(ethers.formatEther(balance));
 
-                    const contract = new Contract('0xf65485A8c1a23E6FA40155AB1a53A7A5FF565C50', contractABI.abi, signer);
+                    const contract = new Contract('0x6567c84fDf23c0a54585320a9a9048EA8a45eB37', contractABI.abi, signer);
                     const owner = await contract.owner();
 
                     setIsOwner(signerAddress === owner);
@@ -177,11 +175,17 @@ function VotingComponent() {
 
                 const count = await contract.getProposalsCount();
                 const updatedProposals = [];
+                const updatedVotingStatus = {};
+
                 for (let i = 0; i < count; i++) {
                     const proposal = await contract.getProposal(i);
                     updatedProposals.push(proposal);
+                    const hasUserVotedForProposal = await contract.hasVoted(i, signerAddress);
+                    updatedVotingStatus[i] = hasUserVotedForProposal;
                 }
+
                 setProposals(updatedProposals);
+                setVotingStatus(updatedVotingStatus); // Update the votingStatus state
                 setIsSpeedDialOpen(false);
             } catch (err) {
                 console.error('Error removing proposal:', err);
@@ -193,18 +197,20 @@ function VotingComponent() {
 
 
     async function vote(proposalId) {
-
         if (contract) {
             try {
-
                 const hasUserVotedForProposal = await contract.hasVoted(proposalId, signerAddress);
 
-
                 if (!hasUserVotedForProposal) {
-
                     const tx = await contract.vote(proposalId);
 
                     await tx.wait();
+
+                    // Update the votingStatus state to reflect the new vote
+                    setVotingStatus(prevVotingStatus => ({
+                        ...prevVotingStatus,
+                        [proposalId]: true
+                    }));
 
                     openSnackbar('Vote cast successfully!');
                     const count = await contract.getProposalsCount();
@@ -214,13 +220,9 @@ function VotingComponent() {
                         proposals.push(proposal);
                     }
                     setProposals(proposals);
-
                 } else {
                     openSnackbar("Already voted.")
                 }
-
-
-
             } catch (err) {
                 console.error('Error casting vote:', err);
             }
@@ -263,15 +265,14 @@ function VotingComponent() {
                                 background: '#fff',
                                 color: '#73caa4',
 
-                                border: '1px solid rgba(115, 202, 164, .3)',
                                 borderRadius: `10px`,
-                                boxShadow: '0px 0px 10px 1px rgba(115, 202, 164, .3)',
+
                                 fontFamily: 'Roboto, sans-serif',
 
                             }}>
                                 <AccordionSummary sx={{
                                     background: "#3a3e45",
-                                    borderRadius: '10px 10px 0 0',
+                                    borderRadius: '10px',
                                 }}>
                                     <Typography variant="h6"> {proposal.title}</Typography>
                                 </AccordionSummary>

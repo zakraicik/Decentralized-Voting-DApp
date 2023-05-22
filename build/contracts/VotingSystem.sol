@@ -10,6 +10,7 @@ contract VotingSystem {
     Proposal[] public proposals;
 
     mapping(uint => mapping(address => bool)) public hasVoted;
+    mapping(uint => address[]) public votersForProposal;
     address public owner;
 
     event ProposalCreated(uint proposalIndex, string title, string description);
@@ -48,10 +49,20 @@ contract VotingSystem {
     ) public onlyOwner proposalExists(proposalIndex) {
         emit ProposalRemoved(proposalIndex);
 
-        delete proposals[proposalIndex];
+        // Delete votes for the removed proposal
+        address[] storage voters = votersForProposal[proposalIndex];
+        for (uint i = 0; i < voters.length; i++) {
+            delete hasVoted[proposalIndex][voters[i]];
+        }
 
+        // Shift proposals and their votes
         for (uint i = proposalIndex; i < proposals.length - 1; i++) {
             proposals[i] = proposals[i + 1];
+            votersForProposal[i] = votersForProposal[i + 1];
+            for (uint j = 0; j < votersForProposal[i].length; j++) {
+                address voter = votersForProposal[i][j];
+                hasVoted[i][voter] = hasVoted[i + 1][voter];
+            }
         }
 
         proposals.pop();
@@ -64,6 +75,7 @@ contract VotingSystem {
         );
         proposals[proposalIndex].voteCount++;
         hasVoted[proposalIndex][msg.sender] = true;
+        votersForProposal[proposalIndex].push(msg.sender);
         emit Voted(proposalIndex, msg.sender);
     }
 
