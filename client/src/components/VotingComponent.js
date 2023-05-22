@@ -27,6 +27,7 @@ import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 
 
 
+
 const StyledSpeedDial = styled(SpeedDial)({
     position: 'fixed',
     bottom: '16px',
@@ -34,6 +35,33 @@ const StyledSpeedDial = styled(SpeedDial)({
 
 });
 
+
+
+const ShimmerVoteButton = styled(Button)`
+  position: relative;
+  overflow: hidden;
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 5s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+`;
 
 
 function VotingComponent() {
@@ -262,44 +290,57 @@ function VotingComponent() {
                     <Stack spacing={2} >
 
                         {proposals.map((proposal, index) => (
-                            <Accordion key={index} style={{
-                                background: '#fff',
-                                color: '#73caa4',
-
-                                borderRadius: `10px`,
-
-                                fontFamily: 'Roboto, sans-serif',
-
-                            }}>
-                                <AccordionSummary sx={{
-                                    background: "#3a3e45",
-                                    borderRadius: '10px',
-                                }}>
-                                    <Typography variant="h6"> {proposal.title}</Typography>
+                            <Accordion
+                                key={index}
+                                style={{
+                                    background: '#fff',
+                                    color: '#ffffff',
+                                    borderRadius: `10px`,
+                                    fontFamily: 'Roboto, sans-serif',
+                                }}
+                            >
+                                <AccordionSummary
+                                    sx={{
+                                        background: "#ffffff",
+                                        borderRadius: '10px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        boxShadow: '0px 0px 20px 3px rgba(115, 202, 164, .3)'
+                                    }}
+                                >
+                                    <div style={{ color: '#37b78c', display: 'flex', alignItems: 'center', flexBasis: '0', flexGrow: 1 }}>
+                                        <Typography variant="h6" style={{ textTransform: 'uppercase' }}>{proposal.title}</Typography>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', fontWeight: 600 }}>
+                                        <LocalFireDepartmentIcon style={{ color: '#fc9847', marginLeft: '5px' }} />
+                                        <span style={{ color: '#fc9847', marginLeft: '5px' }}>{proposal.voteCount.toString()}</span>
+                                    </div>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                                        <div>
+                                        <div style={{ marginBottom: '25px', color: '#505762' }}>
                                             <Typography variant="body1">{proposal.description}</Typography>
-
                                         </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                            <Button
+                                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', position: 'relative' }}>
+                                            <ShimmerVoteButton
                                                 variant="contained"
                                                 color="primary"
                                                 onClick={() => vote(index)}
                                                 disabled={votingStatus[index]}
+                                                style={{
+                                                    backgroundColor: '#84d7b8',
+                                                    color: '#ffffff',
+                                                }}
                                             >
-                                                {votingStatus[index] ? "Already Support" : "I support"}
-                                            </Button>
-                                            <LocalFireDepartmentIcon style={{ padding: 0, color: '#fc9847' }}></LocalFireDepartmentIcon> {proposal.voteCount.toString()}
+                                                {votingStatus[index] ? 'Already Support' : 'I support'}
+                                            </ShimmerVoteButton>
                                             {isOwner && (
-                                                <IconButton
-                                                    color="#3a3e45"
-                                                    onClick={() => removeProposal(index)}
-                                                >
-                                                    <DeleteIcon />
-                                                </IconButton>
+                                                <div style={{ position: 'absolute', bottom: 0, right: 0 }}>
+                                                    <IconButton color="#3a3e45" onClick={() => removeProposal(index)}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
