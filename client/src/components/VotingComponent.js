@@ -347,7 +347,7 @@ function VotingComponent() {
                         <Container
                             sx={{
                                 overflow: "visible",
-                                boxShadow: "0px 0px 25px 7px rgba(115, 202, 164, .3)",
+                                boxShadow: "0px 0px 30px 3px rgba(115, 202, 164, .3)",
                                 margin: 0,
                                 padding: '0 !important',
 
