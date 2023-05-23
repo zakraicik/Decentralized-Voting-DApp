@@ -1,13 +1,20 @@
 import React from "react";
 import VotingComponent from "./components/VotingComponent";
-import "./App.css";
-
+import { CssBaseline, ThemeProvider, Box } from "@mui/material";
+import lightTheme from "./themes/LightTheme";
 
 function App() {
   return (
-    <div className="App" style={{ minHeight: "100vh", color: "white" }}>
-      <VotingComponent />
-    </div>
+    <ThemeProvider theme={lightTheme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          minHeight: "100vh",
+        }}
+      >
+        <VotingComponent />
+      </Box>
+    </ThemeProvider>
   );
 }
 

@@ -5,9 +5,7 @@ import Container from "@mui/material/Container";
 import ConnectedStatus from "./ConnectedStatus";
 import Balance from "./Balance";
 import Stack from "@mui/material/Stack";
-
 import Typography from "@mui/material/Typography";
-import { styled } from "@mui/material/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -25,56 +23,8 @@ import CardContent from "@mui/material/CardContent";
 import Carousel from "react-material-ui-carousel";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-const ShimmerVoteButton = styled(Button)`
-  position: relative;
-  overflow: hidden;
-
-  &:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -50%;
-    width: 200%;
-    height: 100%;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(255, 255, 255, 0.4),
-      transparent
-    );
-    background-size: 200% 100%;
-    animation: shimmer 5s infinite linear;
-  }
-
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
-`;
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#37b78c', // Change this to the color you want
-        },
-    },
-    components: {
-        MuiSnackbarContent: {
-            styleOverrides: {
-                root: {
-                    backgroundColor: 'rgba(55, 183, 140, 0.6)', // Adjust opacity here
-                },
-            },
-        }
-    },
-
-});
+import ShimmerButton from "./ShimmerButton";
+import { Box } from "@mui/material";
 
 function VotingComponent() {
     const [contract, setContract] = useState(null);
@@ -272,10 +222,10 @@ function VotingComponent() {
     }
 
     return (
-        <Container maxWidth={false} >
+        <Container maxWidth={false}>
             <Stack>
-                <div
-                    style={{
+                <Box
+                    sx={{
                         position: "fixed",
                         top: "20px",
                         left: "20px",
@@ -287,41 +237,42 @@ function VotingComponent() {
                         backgroundColor: "transparent",
                     }}
                 >
-                    <div >
+                    <Box>
                         <ConnectedStatus
                             isConnected={isConnected}
                             signerAddress={signerAddress}
                         />
-                    </div>
-                    <Balance accountBalance={accountBalance} />
-
-                </div>
+                    </Box>
+                    {isConnected && <Balance accountBalance={accountBalance} />}
+                </Box>
 
                 <Container
-                    maxWidth="sm"
+
                     sx={{
                         marginTop: "80px",
                     }}
                 >
-                    <img
+                    <Box
+                        component="img"
                         src="/logo.png"
                         alt="Your Logo"
-                        style={{
+                        sx={{
                             display: "block",
                             marginLeft: "auto",
                             marginRight: "auto",
                             width: "50%",
                             height: "auto",
                             objectFit: "contain",
-                            marginTop: "20px",
-                            marginBottom: "50px",
+                            mt: 2, // margin-top using theme spacing
+                            mb: 5, // margin-bottom using theme spacing
                         }}
                     />
 
                     {proposals.length === 0 ? (
-                        <div
-                            style={{
-                                color: "#37b78c",
+                        <Typography
+                            variant="h1"
+                            sx={{
+                                textAlign: "center",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -329,57 +280,44 @@ function VotingComponent() {
                                 flexGrow: 1,
                             }}
                         >
-                            <Typography
-                                style={{
-                                    fontSize: "24px",
-                                    letterSpacing: "0.1em",
-                                    fontFamily: "Roboto, sans-serif",
-                                    textTransform: "uppercase",
-                                    fontWeight: 900,
-                                    color: "#37b78c",
-                                    textAlign: "center",
-                                }}
-                            >
-                                There are currently no proposals
-                            </Typography>
-                        </div>
+                            There are currently no proposals
+                        </Typography>
                     ) : (
                         <Container
                             sx={{
                                 overflow: "visible",
                                 boxShadow: "0px 0px 30px 3px rgba(115, 202, 164, .3)",
                                 margin: 0,
-                                padding: '0 !important',
-
+                                padding: "0 !important",
                             }}
                         >
+
                             <Carousel
                                 autoPlay={false}
                                 indicators={false}
                                 index={currentSlide}
                                 onChange={(index) => setCurrentSlide(index)}
                                 sx={{
-                                    width: '100%', margin: 0,
+                                    width: "100%",
+                                    margin: 0,
                                     padding: 0,
-                                    boxSizing: 'border-box'
+                                    boxSizing: "border-box",
                                 }}
-
                             >
                                 {proposals.map((proposal, index) => (
                                     <Card
                                         key={index}
                                         variant="outlined"
-                                        style={{
-                                            color: "#ffffff",
-                                            fontFamily: "Roboto, sans-serif",
-                                            borderColor: "#f5faf8",
-                                            width: '100%', margin: 0,
-                                            padding: 0,
-                                            boxSizing: 'border-box'
+                                        sx={{
+                                            borderColor: theme => theme.palette.primary.contrastText,
+                                            width: "100%",
+                                            m: 0, // Margin shorthand
+                                            p: 0, // Padding shorthand
+                                            boxSizing: "border-box",
                                         }}
                                     >
                                         <CardContent
-                                            style={{
+                                            sx={{
                                                 display: "flex",
                                                 justifyContent: "space-between",
                                                 alignItems: "center",
@@ -387,29 +325,18 @@ function VotingComponent() {
                                                 marginBottom: 0,
                                             }}
                                         >
-                                            <div
-                                                style={{
-                                                    color: "#37b78c",
+                                            <Box
+                                                sx={{
                                                     display: "flex",
                                                     alignItems: "center",
                                                     flexBasis: "0",
                                                     flexGrow: 1,
                                                 }}
                                             >
-                                                <Typography
-                                                    style={{
-                                                        fontSize: "24px",
-                                                        letterSpacing: "0.1em",
-                                                        fontFamily: "Roboto, sans-serif",
-                                                        textTransform: "uppercase",
-                                                        fontWeight: 900,
-                                                    }}
-                                                >
-                                                    {proposal.title}
-                                                </Typography>
+                                                <Typography variant="h1">{proposal.title}</Typography>
                                                 {isOwner && (
-                                                    <div
-                                                        style={{
+                                                    <Box
+                                                        sx={{
                                                             position: "relative",
                                                             bottom: 0,
                                                             right: 0,
@@ -418,9 +345,9 @@ function VotingComponent() {
                                                     >
                                                         <IconButton
                                                             onClick={() => removeProposal(index)}
-                                                            style={{
+                                                            sx={{
                                                                 height: "48px",
-                                                                color: "#8a8e94",
+                                                                color: theme => theme.palette.primary.remove,
                                                                 width: "48px",
                                                                 borderRadius: "50%",
                                                                 display: "flex",
@@ -428,55 +355,50 @@ function VotingComponent() {
                                                                 justifyContent: "center",
                                                             }}
                                                         >
-                                                            <DeleteIcon style={{ fontSize: "25px" }} />
+                                                            <DeleteIcon sx={{ fontSize: "25px" }} />
                                                         </IconButton>
-                                                    </div>
+                                                    </Box>
                                                 )}
-                                            </div>
+                                            </Box>
                                         </CardContent>
 
-                                        <CardContent
-                                            style={{
-                                                color: "#505762",
-                                                fontFamily: "Roboto, sans-serif",
-                                            }}
-                                        >
-                                            <Typography sx={{ fontFamily: "Roboto, sans-serif" }}>
+                                        <CardContent>
+                                            <Typography variant="body">
                                                 {proposal.description}
                                             </Typography>
                                         </CardContent>
                                         <CardActions
-                                            style={{
+                                            sx={{
                                                 display: "flex",
                                                 justifyContent: "space-between",
                                                 alignItems: "center",
                                                 position: "relative",
                                             }}
                                         >
-                                            <div
-                                                style={{
+                                            <Box
+                                                sx={{
                                                     display: "flex",
                                                     alignItems: "center",
                                                     fontWeight: 600,
                                                 }}
                                             >
                                                 <LocalFireDepartmentIcon
-                                                    style={{ color: "#fc9847", marginLeft: "5px" }}
+                                                    sx={{ color: "#fc9847", marginLeft: "5px" }}
                                                 />
-                                                <span style={{ color: "#fc9847", marginLeft: "5px" }}>
+                                                <Typography variant="h2" sx={{ color: "#fc9847", marginLeft: "5px", fontSize: "15px" }}>
                                                     {proposal.voteCount.toString()}
-                                                </span>
-                                            </div>
+                                                </Typography>
+                                            </Box>
 
-                                            <ShimmerVoteButton
+                                            <ShimmerButton
                                                 variant="contained"
                                                 color="primary"
                                                 onClick={() => vote(index)}
                                                 disabled={votingStatus[index]}
-                                                style={{
+                                                sx={{
                                                     backgroundColor: votingStatus[index]
-                                                        ? "#D3D3D3"
-                                                        : "#48c9a9",
+                                                        ? theme => theme.palette.primary.disabled
+                                                        : theme => theme.palette.primary.light,
                                                     color: "#fff",
                                                     opacity: votingStatus[index] ? 0.5 : 1, // Reduce opacity when disabled
                                                     cursor: votingStatus[index]
@@ -485,7 +407,7 @@ function VotingComponent() {
                                                 }}
                                             >
                                                 {votingStatus[index] ? "Already Voted" : "Vote"}
-                                            </ShimmerVoteButton>
+                                            </ShimmerButton>
                                         </CardActions>
                                     </Card>
                                 ))}
@@ -496,7 +418,6 @@ function VotingComponent() {
             </Stack>
 
             <Container
-                maxWidth="sm"
                 sx={{
                     marginTop: "80px",
                     display: "flex",
@@ -504,48 +425,46 @@ function VotingComponent() {
                     alignItems: "center",
                 }}
             >
-                <ThemeProvider theme={theme}>
-                    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-                        <DialogTitle style={{ color: "#37b78c" }}>
-                            Add a Proposal
-                        </DialogTitle>
-                        <DialogContent>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                label="Title"
-                                type="text"
-                                fullWidth
-                                variant="standard"
-                                value={newTitle}
-                                onChange={(e) => setNewTitle(e.target.value)}
-                            />
-                            <TextField
-                                margin="dense"
-                                label="Description"
-                                type="text"
-                                fullWidth
-                                variant="standard"
-                                value={newDescription}
-                                onChange={(e) => setNewDescription(e.target.value)}
-                            />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-                            <Button onClick={handleAdd}>Add</Button>
-                        </DialogActions>
-                    </Dialog>
-                </ThemeProvider>
+                <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+                    <DialogTitle>
+                        <Typography variant="body">Add a Proposal</Typography>
+                    </DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            label="Title"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                        />
+                        <TextField
+                            margin="dense"
+                            label="Description"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            value={newDescription}
+                            onChange={(e) => setNewDescription(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={handleAdd}>Add</Button>
+                    </DialogActions>
+                </Dialog>
+
                 {isOwner && (
                     <Fab
-                        color="primary"
                         aria-label="add"
-                        style={{
+                        sx={{
                             position: "fixed", // Here we use fixed positioning
                             bottom: "1rem", // Offset from the bottom
                             right: "1rem", // Offset from the right
-                            backgroundColor: "#48c9a9", // Set the desired button background color
-                            color: "#fff",
+                            backgroundColor: theme => theme.palette.primary.light,
+                            color: theme => theme.palette.primary.contrastText,
                         }}
                         onClick={openDialog} // Add your own logic here
                     >
@@ -553,14 +472,13 @@ function VotingComponent() {
                     </Fab>
                 )}
             </Container>
-            <ThemeProvider theme={theme}>
-                <Snackbar
-                    open={snackbarOpen}
-                    autoHideDuration={4000}
-                    onClose={closeSnackbar}
-                    message={snackbarMessage}
-                />
-            </ThemeProvider>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={4000}
+                onClose={closeSnackbar}
+                message={snackbarMessage}
+            />
         </Container>
     );
 }
