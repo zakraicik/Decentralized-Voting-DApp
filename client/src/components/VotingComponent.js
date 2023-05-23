@@ -25,6 +25,7 @@ import CardContent from "@mui/material/CardContent";
 import Carousel from "react-material-ui-carousel";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const ShimmerVoteButton = styled(Button)`
   position: relative;
@@ -56,6 +57,24 @@ const ShimmerVoteButton = styled(Button)`
     }
   }
 `;
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#37b78c', // Change this to the color you want
+        },
+    },
+    components: {
+        MuiSnackbarContent: {
+            styleOverrides: {
+                root: {
+                    backgroundColor: 'rgba(55, 183, 140, 0.6)', // Adjust opacity here
+                },
+            },
+        }
+    },
+
+});
 
 function VotingComponent() {
     const [contract, setContract] = useState(null);
@@ -253,7 +272,7 @@ function VotingComponent() {
     }
 
     return (
-        <Container maxWidth={false}>
+        <Container maxWidth={false} >
             <Stack>
                 <div
                     style={{
@@ -328,9 +347,10 @@ function VotingComponent() {
                         <Container
                             sx={{
                                 overflow: "visible",
-                                boxShadow: "0px 0px 25px 2px rgba(115, 202, 164, .3)",
+                                boxShadow: "0px 0px 25px 7px rgba(115, 202, 164, .3)",
                                 margin: 0,
-                                padding: 0,
+                                padding: '0 !important',
+
                             }}
                         >
                             <Carousel
@@ -338,6 +358,12 @@ function VotingComponent() {
                                 indicators={false}
                                 index={currentSlide}
                                 onChange={(index) => setCurrentSlide(index)}
+                                sx={{
+                                    width: '100%', margin: 0,
+                                    padding: 0,
+                                    boxSizing: 'border-box'
+                                }}
+
                             >
                                 {proposals.map((proposal, index) => (
                                     <Card
@@ -347,6 +373,9 @@ function VotingComponent() {
                                             color: "#ffffff",
                                             fontFamily: "Roboto, sans-serif",
                                             borderColor: "#f5faf8",
+                                            width: '100%', margin: 0,
+                                            padding: 0,
+                                            boxSizing: 'border-box'
                                         }}
                                     >
                                         <CardContent
@@ -475,37 +504,38 @@ function VotingComponent() {
                     alignItems: "center",
                 }}
             >
-                <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-                    <DialogTitle style={{ color: "#37b78c" }}>
-                        Add a Proposal{" "}
-                    </DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            label="Title"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            value={newTitle}
-                            onChange={(e) => setNewTitle(e.target.value)}
-                        />
-                        <TextField
-                            margin="dense"
-                            label="Description"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            value={newDescription}
-                            onChange={(e) => setNewDescription(e.target.value)}
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-                        <Button onClick={handleAdd}>Add</Button>
-                    </DialogActions>
-                </Dialog>
-
+                <ThemeProvider theme={theme}>
+                    <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+                        <DialogTitle style={{ color: "#37b78c" }}>
+                            Add a Proposal
+                        </DialogTitle>
+                        <DialogContent>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                label="Title"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                value={newTitle}
+                                onChange={(e) => setNewTitle(e.target.value)}
+                            />
+                            <TextField
+                                margin="dense"
+                                label="Description"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                value={newDescription}
+                                onChange={(e) => setNewDescription(e.target.value)}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+                            <Button onClick={handleAdd}>Add</Button>
+                        </DialogActions>
+                    </Dialog>
+                </ThemeProvider>
                 {isOwner && (
                     <Fab
                         color="primary"
@@ -523,17 +553,14 @@ function VotingComponent() {
                     </Fab>
                 )}
             </Container>
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={closeSnackbar}
-                message={snackbarMessage}
-                action={
-                    <Button color="secondary" size="small" onClick={closeSnackbar}>
-                        Close
-                    </Button>
-                }
-            />
+            <ThemeProvider theme={theme}>
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={4000}
+                    onClose={closeSnackbar}
+                    message={snackbarMessage}
+                />
+            </ThemeProvider>
         </Container>
     );
 }
