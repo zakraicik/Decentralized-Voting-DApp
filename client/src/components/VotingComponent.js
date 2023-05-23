@@ -16,7 +16,6 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import "@fontsource/roboto";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -25,6 +24,8 @@ import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import ShimmerButton from "./ShimmerButton";
 import { Box } from "@mui/material";
+import { useSnackbar } from "../hooks/useSnackbar"
+import { useDialog } from '../hooks/useDialog';
 
 function VotingComponent() {
     const [contract, setContract] = useState(null);
@@ -35,32 +36,17 @@ function VotingComponent() {
     const [newDescription, setNewDescription] = useState("");
     const [signerAddress, setSignerAddress] = useState(null);
     const [accountBalance, setAccountBalance] = useState("");
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
     const [votingStatus, setVotingStatus] = useState({});
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    const openDialog = () => {
-        setDialogOpen(true);
-    };
+    const { snackbarOpen, snackbarMessage, openSnackbar, closeSnackbar } = useSnackbar();
+    const { dialogOpen, openDialog, closeDialog } = useDialog();
 
     const handleAdd = () => {
         addProposal();
-        setDialogOpen(false);
+        closeDialog();
     };
 
-    const openSnackbar = (message) => {
-        setSnackbarMessage(message);
-        setSnackbarOpen(true);
-    };
-
-    const closeSnackbar = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-        setSnackbarOpen(false);
-    };
 
     useEffect(() => {
         async function refreshData() {
@@ -286,9 +272,11 @@ function VotingComponent() {
                         <Container
                             sx={{
                                 overflow: "visible",
-                                boxShadow: "0px 0px 30px 3px rgba(115, 202, 164, .3)",
+                                boxShadow: "0px 0px 20px 3px rgba(115, 202, 164, .6)",
                                 margin: 0,
                                 padding: "0 !important",
+                                borderRadius: '8px',
+
                             }}
                         >
 
@@ -302,6 +290,7 @@ function VotingComponent() {
                                     margin: 0,
                                     padding: 0,
                                     boxSizing: "border-box",
+
                                 }}
                             >
                                 {proposals.map((proposal, index) => (
@@ -309,11 +298,14 @@ function VotingComponent() {
                                         key={index}
                                         variant="outlined"
                                         sx={{
-                                            borderColor: theme => theme.palette.primary.contrastText,
+                                            borderColor: theme => theme.palette.background.outline,
                                             width: "100%",
                                             m: 0, // Margin shorthand
                                             p: 0, // Padding shorthand
                                             boxSizing: "border-box",
+                                            borderRadius: '8px',
+                                            backgroundColor: theme => theme.palette.background.container,
+
                                         }}
                                     >
                                         <CardContent
@@ -323,6 +315,7 @@ function VotingComponent() {
                                                 alignItems: "center",
                                                 paddingBottom: 0,
                                                 marginBottom: 0,
+
                                             }}
                                         >
                                             <Box
@@ -392,21 +385,18 @@ function VotingComponent() {
 
                                             <ShimmerButton
                                                 variant="contained"
-                                                color="primary"
                                                 onClick={() => vote(index)}
                                                 disabled={votingStatus[index]}
-                                                sx={{
-                                                    backgroundColor: votingStatus[index]
-                                                        ? theme => theme.palette.primary.disabled
-                                                        : theme => theme.palette.primary.light,
-                                                    color: "#fff",
-                                                    opacity: votingStatus[index] ? 0.5 : 1, // Reduce opacity when disabled
-                                                    cursor: votingStatus[index]
-                                                        ? "not-allowed"
-                                                        : "pointer", // Change cursor when disabled
-                                                }}
                                             >
-                                                {votingStatus[index] ? "Already Voted" : "Vote"}
+                                                {votingStatus[index] ? (
+                                                    <Typography sx={{ color: (theme) => theme.palette.primary.disabled }}>
+                                                        Already Voted
+                                                    </Typography>
+                                                ) : (
+                                                    <Typography sx={{ color: (theme) => theme.palette.primary.contrastText }}> {/* change color or any other props as per your requirement */}
+                                                        Vote
+                                                    </Typography>
+                                                )}
                                             </ShimmerButton>
                                         </CardActions>
                                     </Card>
@@ -425,11 +415,15 @@ function VotingComponent() {
                     alignItems: "center",
                 }}
             >
-                <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-                    <DialogTitle>
+                <Dialog open={dialogOpen} onClose={() => closeDialog()}>
+                    <DialogTitle sx={{
+                        backgroundColor: (theme) => theme.palette.background.container
+                    }}>
                         <Typography variant="body">Add a Proposal</Typography>
                     </DialogTitle>
-                    <DialogContent>
+                    <DialogContent sx={{
+                        backgroundColor: (theme) => theme.palette.background.container
+                    }}>
                         <TextField
                             autoFocus
                             margin="dense"
@@ -439,6 +433,12 @@ function VotingComponent() {
                             variant="standard"
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
+                            sx={{
+                                label: { color: (theme) => theme.typography.body.color },
+                                '& .MuiInput-underline:before': {
+                                    borderBottomColor: (theme) => theme.typography.body.color,
+                                },
+                            }}
                         />
                         <TextField
                             margin="dense"
@@ -448,10 +448,18 @@ function VotingComponent() {
                             variant="standard"
                             value={newDescription}
                             onChange={(e) => setNewDescription(e.target.value)}
+                            sx={{
+                                label: { color: (theme) => theme.typography.body.color },
+                                '& .MuiInput-underline:before': {
+                                    borderBottomColor: (theme) => theme.typography.body.color,
+                                },
+                            }}
                         />
                     </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+                    <DialogActions sx={{
+                        backgroundColor: (theme) => theme.palette.background.container
+                    }}>
+                        <Button onClick={() => closeDialog()}>Cancel</Button>
                         <Button onClick={handleAdd}>Add</Button>
                     </DialogActions>
                 </Dialog>

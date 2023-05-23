@@ -40,7 +40,9 @@ const lightTheme = createTheme({
             main: "#37b78c",
             light: "#73caa4",
             dark: "#2b8752", // This is a made-up value; replace with your actual dark green
-            contrastText: "#ffffff", // Text color when a primary color is used as a background
+            contrastText: "#ffffff",
+            remove: "#8a8e94", // Text color when a primary color is used as a background
+            disabled: "#999999"
         },
         secondary: {
             // greys
@@ -51,6 +53,8 @@ const lightTheme = createTheme({
         },
         background: {
             default: "#ffffff",
+            dark: "#000000",
+            outline: "rgba(115, 202, 164, .6)"
         },
         disconnected: {
             main: "#ca737c",
