@@ -265,14 +265,17 @@ function VotingComponent() {
                         justifyContent: "space-between",
                         alignItems: "center",
                         zIndex: 9999,
-                        backgroundColor: "transparent", // This will make the div's background transparent
+                        backgroundColor: "transparent",
                     }}
                 >
-                    <ConnectedStatus
-                        isConnected={isConnected}
-                        signerAddress={signerAddress}
-                    />
+                    <div >
+                        <ConnectedStatus
+                            isConnected={isConnected}
+                            signerAddress={signerAddress}
+                        />
+                    </div>
                     <Balance accountBalance={accountBalance} />
+
                 </div>
 
                 <Container
