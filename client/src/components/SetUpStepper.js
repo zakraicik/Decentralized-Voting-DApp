@@ -51,8 +51,6 @@ export default function VerticalLinearStepper() {
           p: 2,
         }}
       >
-        {" "}
-        {/* Add this line */}
         <Stepper activeStep={activeStep} orientation="vertical">
           {steps.map((step, index) => (
             <Step key={step.label}>

@@ -100,12 +100,9 @@ function VotingComponent() {
       }
     }
 
-    // Call refreshData on component mount
     refreshData();
 
-    // Add listener for account changes
     window.ethereum.on("accountsChanged", function (accounts) {
-      // Time to refresh the data when account changes
       refreshData();
     });
   }, []);
@@ -159,7 +156,7 @@ function VotingComponent() {
         }
 
         setProposals(updatedProposals);
-        setVotingStatus(updatedVotingStatus); // Update the votingStatus state
+        setVotingStatus(updatedVotingStatus);
 
         if (proposalIndex > 0) {
           setCurrentSlide(proposalIndex - 1);
@@ -187,7 +184,6 @@ function VotingComponent() {
 
           await tx.wait();
 
-          // Update the votingStatus state to reflect the new vote
           setVotingStatus((prevVotingStatus) => ({
             ...prevVotingStatus,
             [proposalId]: true,
@@ -250,25 +246,43 @@ function VotingComponent() {
               width: "115px",
               height: "auto",
               objectFit: "contain",
-              mt: -1, // margin-top using theme spacing
-              mb: 6, // margin-bottom using theme spacing
+              mt: -1,
+              mb: 6,
             }}
           />
-
           {proposals.length === 0 ? (
-            <Typography
-              variant="h1"
+            <Box
               sx={{
-                textAlign: "center",
                 display: "flex",
-                alignItems: "center",
                 justifyContent: "center",
-                flexBasis: "0",
-                flexGrow: 1,
               }}
             >
-              There are currently no proposals
-            </Typography>
+              <Box
+                style={{
+                  border: "1px solid rgba(118,219,205, .6)",
+                  boxShadow: "0px 0px 14px 3px rgba(118,219,205, .45)",
+                  padding: "20px",
+
+                  width: "80%",
+                  borderRadisu: "10px",
+                  margin: "auto",
+                }}
+              >
+                <Typography
+                  variant="h1"
+                  sx={{
+                    textAlign: "center",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexBasis: "0",
+                    flexGrow: 1,
+                  }}
+                >
+                  There are currently no proposals
+                </Typography>
+              </Box>
+            </Box>
           ) : (
             <Container
               sx={{
@@ -300,8 +314,8 @@ function VotingComponent() {
                     sx={{
                       borderColor: (theme) => theme.palette.background.outline,
                       width: "100%",
-                      m: 0, // Margin shorthand
-                      p: 0, // Padding shorthand
+                      m: 0,
+                      p: 0,
                       boxSizing: "border-box",
                       borderRadius: "8px",
                       backgroundColor: (theme) =>
@@ -454,7 +468,6 @@ function VotingComponent() {
               onChange={(e) => setNewTitle(e.target.value)}
               sx={{
                 "& .MuiInputBase-input": {
-                  // <-- use this to style the user-typed text
                   color: (theme) => theme.typography.body.color,
                 },
                 label: { color: (theme) => theme.typography.body.color },
@@ -473,7 +486,6 @@ function VotingComponent() {
               onChange={(e) => setNewDescription(e.target.value)}
               sx={{
                 "& .MuiInputBase-input": {
-                  // <-- use this to style the user-typed text
                   color: (theme) => theme.typography.body.color,
                 },
                 label: { color: (theme) => theme.typography.body.color },

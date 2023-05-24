@@ -43,20 +43,18 @@ const darkTheme = createTheme({
   },
   palette: {
     primary: {
-      // greens
       main: "#37b78c",
       light: "#73caa4",
-      dark: "#2b8752", // This is a made-up value; replace with your actual dark green
+      dark: "#2b8752",
       contrastText: "#ffffff",
-      remove: "#8a8e94", // Text color when a primary color is used as a background
+      remove: "#8a8e94",
       disabled: "#D3D3D3",
     },
     secondary: {
-      // greys
       main: "#505762",
-      light: "#777b82", // This is a made-up value; replace with your actual light grey
+      light: "#777b82",
       dark: "#22252a",
-      contrastText: "#ffffff", // Text color when a secondary color is used as a background
+      contrastText: "#ffffff",
     },
     background: {
       default: "#000000",
@@ -72,14 +70,13 @@ const darkTheme = createTheme({
     MuiSnackbarContent: {
       styleOverrides: {
         root: {
-          backgroundColor: "rgba(55, 183, 140, 0.6)", // Adjust opacity here
+          backgroundColor: "rgba(55, 183, 140, 0.6)",
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         root: {
-          // Add your global styles here
           backgroundColor: "#505762",
           color: "#fff",
         },
@@ -89,7 +86,7 @@ const darkTheme = createTheme({
       styleOverrides: {
         label: {
           "&.Mui-active.MuiStepLabel-alternativeLabel": {
-            color: "common.white", // Active step color
+            color: "common.white",
           },
         },
       },

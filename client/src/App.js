@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import lightTheme from "./themes/LightTheme";
-import darkTheme from "./themes/DarkTheme"; // Make sure to create a DarkTheme
+import darkTheme from "./themes/DarkTheme";
 
 function App() {
   const [isDark, setIsDark] = useState(true);
@@ -35,11 +35,11 @@ function App() {
           sx={{
             minHeight: "100vh",
             display: "flex",
-            flexDirection: "column", // This will align children vertically
+            flexDirection: "column",
             justifyContent: "flex-start",
             alignItems: "center",
             px: 4,
-            pt: 1,
+            pt: 3,
           }}
         >
           <CssBaseline />
@@ -53,8 +53,8 @@ function App() {
               width: "115px",
               height: "auto",
               objectFit: "contain",
-              mt: 0, // margin-top using theme spacing
-              mb: 4, // margin-bottom using theme spacing
+              mt: 0,
+              mb: 4,
             }}
           />
           <SetUpStepper />
@@ -86,7 +86,7 @@ function App() {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
-                  width: "100px", // Set a specific width here
+                  width: "100px",
                 }}
               >
                 <Typography variant="caption">Dark Mode</Typography>

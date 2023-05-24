@@ -36,20 +36,18 @@ const lightTheme = createTheme({
   },
   palette: {
     primary: {
-      // greens
       main: "#37b78c",
       light: "#73caa4",
-      dark: "#2b8752", // This is a made-up value; replace with your actual dark green
+      dark: "#2b8752",
       contrastText: "#ffffff",
-      remove: "#8a8e94", // Text color when a primary color is used as a background
+      remove: "#8a8e94",
       disabled: "#666666",
     },
     secondary: {
-      // greys
       main: "#505762",
-      light: "#777b82", // This is a made-up value; replace with your actual light grey
+      light: "#777b82",
       dark: "#22252a",
-      contrastText: "#ffffff", // Text color when a secondary color is used as a background
+      contrastText: "#ffffff",
     },
     background: {
       default: "#ffffff",
@@ -65,7 +63,7 @@ const lightTheme = createTheme({
     MuiSnackbarContent: {
       styleOverrides: {
         root: {
-          backgroundColor: "rgba(55, 183, 140, 0.6)", // Adjust opacity here
+          backgroundColor: "rgba(55, 183, 140, 0.6)",
         },
       },
     },
@@ -73,7 +71,7 @@ const lightTheme = createTheme({
       styleOverrides: {
         label: {
           "&.Mui-active.MuiStepLabel-alternativeLabel": {
-            color: "common.white", // Active step color
+            color: "common.white",
           },
         },
       },
