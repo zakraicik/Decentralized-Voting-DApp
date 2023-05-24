@@ -21,7 +21,7 @@ const steps = [
       "A wallet is needed to connect to DApps because it provides a secure way to manage and use your digital assets and identity on the blockchain.",
   },
   {
-    label: "Metamask Browser ",
+    label: "Metamask Browser",
     description: `Navigate to this app on the Metamask browser. DApps need to connect to a wallet because the wallet serves as a user's identity and means of transacting with the blockchain-based application.`,
   },
 ];
@@ -47,7 +47,6 @@ export default function VerticalLinearStepper() {
         sx={{
           boxShadow: "0px 0px 14px 3px rgba(118,219,205, .45)",
           borderRadius: "10px",
-
           p: 2,
         }}
       >
@@ -56,7 +55,7 @@ export default function VerticalLinearStepper() {
             <Step key={step.label}>
               <StepLabel
                 optional={
-                  index === 2 ? (
+                  index === steps.length - 1 ? (
                     <Typography variant="caption">Last step</Typography>
                   ) : null
                 }
@@ -67,20 +66,20 @@ export default function VerticalLinearStepper() {
                 <Typography variant="body">{step.description}</Typography>
                 <Box sx={{ mb: 2 }}>
                   <div>
-                    <ShimmerButton
-                      variant="contained"
-                      onClick={handleNext}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      {index === steps.length - 1 ? "Finish" : "Continue"}
-                    </ShimmerButton>
-                    <Button
-                      disabled={index === 0}
-                      onClick={handleBack}
-                      sx={{ mt: 1, mr: 1 }}
-                    >
-                      Back
-                    </Button>
+                    {index !== steps.length - 1 && (
+                      <ShimmerButton
+                        variant="contained"
+                        onClick={handleNext}
+                        sx={{ mt: 1, mr: 1 }}
+                      >
+                        Continue
+                      </ShimmerButton>
+                    )}
+                    {index !== 0 && (
+                      <Button onClick={handleBack} sx={{ mt: 1, mr: 1 }}>
+                        Back
+                      </Button>
+                    )}
                   </div>
                 </Box>
               </StepContent>
