@@ -248,7 +248,7 @@ function VotingComponent() {
                             height: "auto",
                             objectFit: "contain",
                             mt: -1, // margin-top using theme spacing
-                            mb: 3, // margin-bottom using theme spacing
+                            mb: 6, // margin-bottom using theme spacing
                         }}
                     />
 
