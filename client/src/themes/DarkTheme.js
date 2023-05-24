@@ -16,6 +16,13 @@ const darkTheme = createTheme({
       fontWeight: 700,
       lineHeight: "1",
     },
+    h3: {
+      color: "#37b78c",
+      fontSize: "16px",
+      letterSpacing: "0.1em",
+
+      fontWeight: 600,
+    },
     body: {
       fontSize: "16px",
       color: "#fff",
@@ -36,24 +43,22 @@ const darkTheme = createTheme({
   },
   palette: {
     primary: {
-      // greens
       main: "#37b78c",
       light: "#73caa4",
-      dark: "#2b8752", // This is a made-up value; replace with your actual dark green
+      dark: "#2b8752",
       contrastText: "#ffffff",
-      remove: "#8a8e94", // Text color when a primary color is used as a background
+      remove: "#8a8e94",
       disabled: "#D3D3D3",
     },
     secondary: {
-      // greys
       main: "#505762",
-      light: "#777b82", // This is a made-up value; replace with your actual light grey
+      light: "#777b82",
       dark: "#22252a",
-      contrastText: "#ffffff", // Text color when a secondary color is used as a background
+      contrastText: "#ffffff",
     },
     background: {
       default: "#000000",
-      container: "#111111",
+      container: "#000000",
       outline: "rgba(115, 202, 164, .6)",
     },
     disconnected: {
@@ -65,16 +70,24 @@ const darkTheme = createTheme({
     MuiSnackbarContent: {
       styleOverrides: {
         root: {
-          backgroundColor: "rgba(55, 183, 140, 0.6)", // Adjust opacity here
+          backgroundColor: "rgba(55, 183, 140, 0.6)",
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         root: {
-          // Add your global styles here
           backgroundColor: "#505762",
           color: "#fff",
+        },
+      },
+    },
+    MuiStepLabel: {
+      styleOverrides: {
+        label: {
+          "&.Mui-active.MuiStepLabel-alternativeLabel": {
+            color: "common.white",
+          },
         },
       },
     },

@@ -6,7 +6,7 @@ const ShimmerButton = styled(Button)(({ theme, disabled }) => ({
   overflow: "hidden",
   backgroundColor: disabled
     ? theme.palette.primary.disabled
-    : theme.palette.primary.light,
+    : theme.palette.primary.main,
   opacity: disabled ? 0.5 : 1,
   cursor: disabled ? "not-allowed" : "pointer",
   "&:after": {
@@ -16,7 +16,7 @@ const ShimmerButton = styled(Button)(({ theme, disabled }) => ({
     left: "-50%",
     width: "200%",
     height: "100%",
-    background: `linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent)`,
+    background: `linear-gradient(to right, transparent, rgba(211, 211, 211, 0.4), transparent)`,
     backgroundSize: "200% 100%",
     animation: "shimmer 5s infinite linear",
   },
