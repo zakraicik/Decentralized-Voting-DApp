@@ -220,7 +220,6 @@ function VotingComponent() {
                         justifyContent: "space-between",
                         alignItems: "center",
                         zIndex: 9999,
-                        backgroundColor: "transparent",
                     }}
                 >
                     <Box>

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import VotingComponent from "./components/VotingComponent";
-
+import SetUpStepper from "./components/SetUpStepper"
 import {
   CssBaseline,
   ThemeProvider,
   Box,
   Switch,
   Typography,
+  Container,
 } from "@mui/material";
 import lightTheme from "./themes/LightTheme";
 import darkTheme from "./themes/DarkTheme"; // Make sure to create a DarkTheme
+
 
 
 function App() {
@@ -32,7 +34,20 @@ function App() {
   return (
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
       {!isWeb3BrowserDetected ? (
-        <p>test</p>
+        <Box
+          sx={{
+            minHeight: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start", // Change this to "flex-start"
+            px: 4,
+            pt: 7
+          }}
+        >
+          <CssBaseline />
+
+          <SetUpStepper />
+        </Box>
       ) : (
         <Box>
           <CssBaseline />
