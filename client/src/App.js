@@ -1,16 +1,22 @@
 import React, { useState } from "react";
 import VotingComponent from "./components/VotingComponent";
-import { CssBaseline, ThemeProvider, Box, Switch, Typography } from "@mui/material";
+import {
+  CssBaseline,
+  ThemeProvider,
+  Box,
+  Switch,
+  Typography,
+} from "@mui/material";
 import lightTheme from "./themes/LightTheme";
-import darkTheme from "./themes/DarkTheme";  // Make sure to create a DarkTheme
-import Stack from "@mui/material/Stack";
+import darkTheme from "./themes/DarkTheme"; // Make sure to create a DarkTheme
+
 
 function App() {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
 
   const handleThemeChange = () => {
     setIsDark(!isDark);
-  }
+  };
 
   return (
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
@@ -47,7 +53,7 @@ function App() {
           </Box>
         </Box>
       </Box>
-    </ThemeProvider >
+    </ThemeProvider>
   );
 }
 

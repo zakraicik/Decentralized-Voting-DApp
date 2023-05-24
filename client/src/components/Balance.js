@@ -6,11 +6,11 @@ function Balance({ accountBalance }) {
   return (
     <Box
       sx={{
-        backgroundColor: theme => theme.palette.background.container,
+        backgroundColor: (theme) => theme.palette.background.container,
         padding: "6px 16px",
         borderRadius: `10px`,
-        border: "1px solid rgba(115, 202, 164, .6)",
-        boxShadow: "0px 0px 20px 3px rgba(115, 202, 164, .6)",
+        border: "1px solid rgba(118,219,205, .6)",
+        boxShadow: "0px 0px 14px 3px rgba(118,219,205, .45)",
       }}
     >
       <Typography variant="h2">

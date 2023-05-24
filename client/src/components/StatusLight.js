@@ -13,10 +13,10 @@ const generateGradient = (color1, color2) => `
 `;
 
 const StatusLight = styled(TimelineDot)(({ color1, color2 }) => ({
-    width: "5px",
-    height: "5px",
-    animation: `${blink} 1s linear infinite`,
-    backgroundImage: generateGradient(color1, color2),
+  width: "5px",
+  height: "5px",
+  animation: `${blink} 1s linear infinite`,
+  backgroundImage: generateGradient(color1, color2),
 }));
 
 export default StatusLight;

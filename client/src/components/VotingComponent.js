@@ -20,12 +20,11 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Carousel from "react-material-ui-carousel";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
 import ShimmerButton from "./ShimmerButton";
 import { Box } from "@mui/material";
-import { useSnackbar } from "../hooks/useSnackbar"
-import { useDialog } from '../hooks/useDialog';
+import { useSnackbar } from "../hooks/useSnackbar";
+import { useDialog } from "../hooks/useDialog";
+import GradientFab from "./GradientFab";
 
 function VotingComponent() {
     const [contract, setContract] = useState(null);
@@ -39,14 +38,15 @@ function VotingComponent() {
     const [votingStatus, setVotingStatus] = useState({});
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    const { snackbarOpen, snackbarMessage, openSnackbar, closeSnackbar } = useSnackbar();
+
+    const { snackbarOpen, snackbarMessage, openSnackbar, closeSnackbar } =
+        useSnackbar();
     const { dialogOpen, openDialog, closeDialog } = useDialog();
 
     const handleAdd = () => {
         addProposal();
         closeDialog();
     };
-
 
     useEffect(() => {
         async function refreshData() {
@@ -233,7 +233,6 @@ function VotingComponent() {
                 </Box>
 
                 <Container
-
                     sx={{
                         marginTop: "80px",
                     }}
@@ -246,11 +245,11 @@ function VotingComponent() {
                             display: "block",
                             marginLeft: "auto",
                             marginRight: "auto",
-                            width: "50%",
+                            width: "40%",
                             height: "auto",
                             objectFit: "contain",
-                            mt: 2, // margin-top using theme spacing
-                            mb: 5, // margin-bottom using theme spacing
+                            mt: -1, // margin-top using theme spacing
+                            mb: 3, // margin-bottom using theme spacing
                         }}
                     />
 
@@ -272,14 +271,15 @@ function VotingComponent() {
                         <Container
                             sx={{
                                 overflow: "visible",
-                                boxShadow: "0px 0px 20px 3px rgba(115, 202, 164, .6)",
-                                margin: 0,
+                                boxShadow: "0px 0px 20px 3px rgba(118,219,205, .45)",
+                                marginLeft: "auto",
+                                marginRight: "auto",
                                 padding: "0 !important",
-                                borderRadius: '8px',
+                                borderRadius: "8px",
+                                width: "80%",
 
                             }}
                         >
-
                             <Carousel
                                 autoPlay={false}
                                 indicators={false}
@@ -298,14 +298,14 @@ function VotingComponent() {
                                         key={index}
                                         variant="outlined"
                                         sx={{
-                                            borderColor: theme => theme.palette.background.outline,
+                                            borderColor: (theme) => theme.palette.background.outline,
                                             width: "100%",
                                             m: 0, // Margin shorthand
                                             p: 0, // Padding shorthand
                                             boxSizing: "border-box",
-                                            borderRadius: '8px',
-                                            backgroundColor: theme => theme.palette.background.container,
-
+                                            borderRadius: "8px",
+                                            backgroundColor: (theme) =>
+                                                theme.palette.background.container,
                                         }}
                                     >
                                         <CardContent
@@ -315,7 +315,6 @@ function VotingComponent() {
                                                 alignItems: "center",
                                                 paddingBottom: 0,
                                                 marginBottom: 0,
-
                                             }}
                                         >
                                             <Box
@@ -340,7 +339,7 @@ function VotingComponent() {
                                                             onClick={() => removeProposal(index)}
                                                             sx={{
                                                                 height: "48px",
-                                                                color: theme => theme.palette.primary.remove,
+                                                                color: (theme) => theme.palette.primary.remove,
                                                                 width: "48px",
                                                                 borderRadius: "50%",
                                                                 display: "flex",
@@ -378,7 +377,14 @@ function VotingComponent() {
                                                 <LocalFireDepartmentIcon
                                                     sx={{ color: "#fc9847", marginLeft: "5px" }}
                                                 />
-                                                <Typography variant="h2" sx={{ color: "#fc9847", marginLeft: "5px", fontSize: "15px" }}>
+                                                <Typography
+                                                    variant="h2"
+                                                    sx={{
+                                                        color: "#fc9847",
+                                                        marginLeft: "5px",
+                                                        fontSize: "15px",
+                                                    }}
+                                                >
                                                     {proposal.voteCount.toString()}
                                                 </Typography>
                                             </Box>
@@ -389,11 +395,20 @@ function VotingComponent() {
                                                 disabled={votingStatus[index]}
                                             >
                                                 {votingStatus[index] ? (
-                                                    <Typography sx={{ color: (theme) => theme.palette.primary.disabled }}>
-                                                        Already Voted
+                                                    <Typography
+                                                        sx={{
+                                                            color: (theme) => theme.palette.primary.disabled,
+                                                        }}
+                                                    >
+                                                        Voted
                                                     </Typography>
                                                 ) : (
-                                                    <Typography sx={{ color: (theme) => theme.palette.primary.contrastText }}> {/* change color or any other props as per your requirement */}
+                                                    <Typography
+                                                        sx={{
+                                                            color: (theme) =>
+                                                                theme.palette.primary.contrastText,
+                                                        }}
+                                                    >
                                                         Vote
                                                     </Typography>
                                                 )}
@@ -416,14 +431,18 @@ function VotingComponent() {
                 }}
             >
                 <Dialog open={dialogOpen} onClose={() => closeDialog()}>
-                    <DialogTitle sx={{
-                        backgroundColor: (theme) => theme.palette.background.container
-                    }}>
+                    <DialogTitle
+                        sx={{
+                            backgroundColor: (theme) => theme.palette.background.container,
+                        }}
+                    >
                         <Typography variant="body">Add a Proposal</Typography>
                     </DialogTitle>
-                    <DialogContent sx={{
-                        backgroundColor: (theme) => theme.palette.background.container
-                    }}>
+                    <DialogContent
+                        sx={{
+                            backgroundColor: (theme) => theme.palette.background.container,
+                        }}
+                    >
                         <TextField
                             autoFocus
                             margin="dense"
@@ -434,8 +453,11 @@ function VotingComponent() {
                             value={newTitle}
                             onChange={(e) => setNewTitle(e.target.value)}
                             sx={{
+                                "& .MuiInputBase-input": { // <-- use this to style the user-typed text
+                                    color: (theme) => theme.typography.body.color
+                                },
                                 label: { color: (theme) => theme.typography.body.color },
-                                '& .MuiInput-underline:before': {
+                                "& .MuiInput-underline:before": {
                                     borderBottomColor: (theme) => theme.typography.body.color,
                                 },
                             }}
@@ -449,36 +471,29 @@ function VotingComponent() {
                             value={newDescription}
                             onChange={(e) => setNewDescription(e.target.value)}
                             sx={{
+                                "& .MuiInputBase-input": { // <-- use this to style the user-typed text
+                                    color: (theme) => theme.typography.body.color
+                                },
                                 label: { color: (theme) => theme.typography.body.color },
-                                '& .MuiInput-underline:before': {
+                                "& .MuiInput-underline:before": {
                                     borderBottomColor: (theme) => theme.typography.body.color,
                                 },
                             }}
                         />
                     </DialogContent>
-                    <DialogActions sx={{
-                        backgroundColor: (theme) => theme.palette.background.container
-                    }}>
+                    <DialogActions
+                        sx={{
+                            backgroundColor: (theme) => theme.palette.background.container,
+                        }}
+                    >
                         <Button onClick={() => closeDialog()}>Cancel</Button>
                         <Button onClick={handleAdd}>Add</Button>
                     </DialogActions>
                 </Dialog>
 
-                {isOwner && (
-                    <Fab
-                        aria-label="add"
-                        sx={{
-                            position: "fixed", // Here we use fixed positioning
-                            bottom: "1rem", // Offset from the bottom
-                            right: "1rem", // Offset from the right
-                            backgroundColor: theme => theme.palette.primary.light,
-                            color: theme => theme.palette.primary.contrastText,
-                        }}
-                        onClick={openDialog} // Add your own logic here
-                    >
-                        <AddIcon />
-                    </Fab>
-                )}
+                <GradientFab
+                    openDialog={openDialog}
+                    isOwner={isOwner} />
             </Container>
 
             <Snackbar
