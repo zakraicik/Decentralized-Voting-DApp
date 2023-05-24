@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
 import VotingComponent from "./components/VotingComponent";
-import SetUpStepper from "./components/SetUpStepper"
+import SetUpStepper from "./components/SetUpStepper";
 import {
   CssBaseline,
   ThemeProvider,
   Box,
   Switch,
   Typography,
-  Container,
 } from "@mui/material";
 import lightTheme from "./themes/LightTheme";
 import darkTheme from "./themes/DarkTheme"; // Make sure to create a DarkTheme
-
-
 
 function App() {
   const [isDark, setIsDark] = useState(true);
@@ -24,7 +21,7 @@ function App() {
   };
 
   useEffect(() => {
-    if (typeof window.ethereum !== 'undefined') {
+    if (typeof window.ethereum !== "undefined") {
       setIsWeb3BrowserDetected(true);
     } else {
       setIsWeb3BrowserDetected(false);
@@ -38,14 +35,28 @@ function App() {
           sx={{
             minHeight: "100vh",
             display: "flex",
-            justifyContent: "center",
-            alignItems: "flex-start", // Change this to "flex-start"
+            flexDirection: "column", // This will align children vertically
+            justifyContent: "flex-start",
+            alignItems: "center",
             px: 4,
-            pt: 7
+            pt: 1,
           }}
         >
           <CssBaseline />
 
+          <Box
+            component="img"
+            src="/logo.png"
+            alt="Your Logo"
+            sx={{
+              display: "block",
+              width: "115px",
+              height: "auto",
+              objectFit: "contain",
+              mt: 0, // margin-top using theme spacing
+              mb: 4, // margin-bottom using theme spacing
+            }}
+          />
           <SetUpStepper />
         </Box>
       ) : (
