@@ -325,48 +325,39 @@ function VotingComponent() {
             <Box
               sx={{
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
-
                 alignItems: "center",
-                height: "70vh",
+                height: "70vh",  // Set height to 100vh to center the box vertically
                 overflow: "hidden",
               }}
             >
               <Box
-                style={{
-                  padding: "20px",
-                  width: "50%",
-                  margin: "auto",
+                component="img"
+                src="/logo.png"
+                alt="Your Logo"
+                sx={{
+                  display: "block",
+                  width: "115px",
+                  height: "auto",
+                  objectFit: "contain",
+                  mt: -1,
+                  mb: 3,
+                }}
+              />
+              <Typography
+                variant="h1"
+                sx={{
+                  textAlign: "center",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexBasis: "0",
+                  overflowWrap: "break-word",
                 }}
               >
-                <Box
-                  component="img"
-                  src="/logo.png"
-                  alt="Your Logo"
-                  sx={{
-                    display: "block",
-                    width: "115px",
-                    height: "auto",
-                    objectFit: "contain",
-                    mt: -1,
-                    mb: 3,
-                  }}
-                />
-                <Typography
-                  variant="h1"
-                  sx={{
-                    textAlign: "center",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexBasis: "0",
-                    flexGrow: 1,
-                    overflowWrap: "break-word",
-                  }}
-                >
-                  Change Network to Sepolia
-                </Typography>
-              </Box>
+                Change Network to Sepolia
+              </Typography>
             </Box>
           )}
 
@@ -405,7 +396,7 @@ function VotingComponent() {
                   overflowWrap: "break-word",
                 }}
               >
-                No proposals
+                No Proposals
               </Typography>
             </Box>
           )}
