@@ -32,6 +32,7 @@ import { useDialog } from "../hooks/useDialog";
 
 function VotingComponent() {
   const [contract, setContract] = useState(null);
+  const [contractExists, setContractExists] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [proposals, setProposals] = useState([]);
@@ -57,39 +58,60 @@ function VotingComponent() {
 
       if (provider) {
         try {
-          const signer = await provider.getSigner();
-          const signerAddress = await signer.getAddress();
-          setSignerAddress(signerAddress);
+          const accounts = await provider.listAccounts();
 
-          const balance = await provider.getBalance(signerAddress);
+          if (accounts.length > 0) {
+            setIsConnected(true);
 
-          setAccountBalance(ethers.formatEther(balance));
+            const signer = await provider.getSigner();
+            const signerAddress = await signer.getAddress();
+            setSignerAddress(signerAddress);
 
-          const contract = new Contract(
-            "0x6567c84fDf23c0a54585320a9a9048EA8a45eB37",
-            contractABI.abi,
-            signer
-          );
-          const owner = await contract.owner();
+            const balance = await provider.getBalance(signerAddress);
 
-          setIsOwner(signerAddress === owner);
-          setContract(contract);
+            setAccountBalance(ethers.formatEther(balance));
 
-          const count = await contract.getProposalsCount();
-          const proposals = [];
-          const votingStatus = {};
-          for (let i = 0; i < count; i++) {
-            const proposal = await contract.getProposal(i);
-            proposals.push(proposal);
-            const hasUserVotedForProposal = await contract.hasVoted(
-              i,
-              signerAddress
-            );
-            votingStatus[i] = hasUserVotedForProposal;
+            try {
+              const contract = new Contract(
+                "0xEa3B222f4cB625a64937323a21fA73ec7A24A0d9",
+                contractABI.abi,
+                signer
+              );
+
+              const owner = await contract.owner();
+
+              setIsOwner(signerAddress === owner);
+              setContract(contract);
+
+              const count = await contract.getProposalsCount();
+              const proposalFetches = [];
+              const voteFetches = [];
+
+              for (let i = 0; i < count; i++) {
+                proposalFetches.push(contract.getProposal(i));
+                voteFetches.push(contract.hasVoted(i, signerAddress));
+              }
+
+              const proposals = await Promise.all(proposalFetches);
+              const votes = await Promise.all(voteFetches);
+
+              const votingStatus = votes.reduce(
+                (acc, voted, i) => ({ ...acc, [i]: voted }),
+                {}
+              );
+
+              setVotingStatus(votingStatus);
+              setProposals(proposals);
+              setContractExists(true);
+            } catch (err) {
+              setContractExists(false);
+            }
+          } else {
+            setIsConnected(false);
+            setSignerAddress(null);
+            setAccountBalance(null);
+            setIsOwner(false);
           }
-          setVotingStatus(votingStatus);
-          setProposals(proposals);
-          setIsConnected(true);
         } catch (err) {
           console.log(err);
           setIsConnected(false);
@@ -105,7 +127,25 @@ function VotingComponent() {
     window.ethereum.on("accountsChanged", function (accounts) {
       refreshData();
     });
+
+    window.ethereum.on('chainChanged', function (chainId) {
+      refreshData();
+    });
   }, []);
+
+  async function connectWallet() {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.enable();
+      } catch (error) {
+        console.error("User rejected request");
+      }
+    } else {
+      alert(
+        "Please install an Ethereum-compatible browser or extension like MetaMask to use this dApp!"
+      );
+    }
+  }
 
   async function addProposal() {
     if (contract && newTitle !== "" && newDescription !== "" && isOwner) {
@@ -235,39 +275,83 @@ function VotingComponent() {
             marginTop: "80px",
           }}
         >
-          <Box
-            component="img"
-            src="/logo.png"
-            alt="Your Logo"
-            sx={{
-              display: "block",
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: "115px",
-              height: "auto",
-              objectFit: "contain",
-              mt: -1,
-              mb: 6,
-            }}
-          />
-          {proposals.length === 0 ? (
+          {!isConnected && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "70vh",
+                overflow: "hidden",
+              }}
+            >
+              <Box
+                component="img"
+                src="/logo.png"
+                alt="Your Logo"
+                sx={{
+                  display: "block",
+                  width: "115px",
+                  height: "auto",
+                  objectFit: "contain",
+                  mt: -1,
+                  // mb: 6,
+                }}
+              />
+              <Box
+                style={{
+                  padding: "20px",
+                  width: "50%",
+                }}
+              >
+                <ShimmerButton
+                  sx={{ height: "50px", width: "100%" }}
+                  onClick={connectWallet}
+                >
+                  <Typography
+                    sx={{
+                      color: (theme) => theme.palette.primary.contrastText,
+                    }}
+                  >
+                    Connect{" "}
+                  </Typography>
+                </ShimmerButton>
+              </Box>
+            </Box>
+          )}
+
+          {isConnected && !contractExists && (
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "center",
+
+                alignItems: "center",
+                height: "70vh",
+                overflow: "hidden",
               }}
             >
               <Box
                 style={{
-                  border: "1px solid rgba(118,219,205, .6)",
-                  boxShadow: "0px 0px 14px 3px rgba(118,219,205, .45)",
                   padding: "20px",
-
-                  width: "80%",
-                  borderRadisu: "10px",
+                  width: "50%",
                   margin: "auto",
                 }}
               >
+                <Box
+                  component="img"
+                  src="/logo.png"
+                  alt="Your Logo"
+                  sx={{
+                    display: "block",
+                    width: "115px",
+                    height: "auto",
+                    objectFit: "contain",
+                    mt: -1,
+                    mb: 3,
+                  }}
+                />
                 <Typography
                   variant="h1"
                   sx={{
@@ -277,161 +361,229 @@ function VotingComponent() {
                     justifyContent: "center",
                     flexBasis: "0",
                     flexGrow: 1,
+                    overflowWrap: "break-word",
                   }}
                 >
-                  There are currently no proposals
+                  Change Network to Sepolia
                 </Typography>
               </Box>
             </Box>
-          ) : (
-            <Container
+          )}
+
+          {isConnected && proposals.length === 0 && contractExists && (
+            <Box
               sx={{
-                overflow: "visible",
-                boxShadow: "0px 0px 20px 3px rgba(118,219,205, .45)",
-                marginLeft: "auto",
-                marginRight: "auto",
-                padding: "0 !important",
-                borderRadius: "8px",
-                width: "80%",
+                display: "flex",
+                justifyContent: "center",
+
+                alignItems: "center",
+                height: "70vh",
+                overflow: "hidden",
               }}
             >
-              <Carousel
-                autoPlay={false}
-                indicators={false}
-                index={currentSlide}
-                onChange={(index) => setCurrentSlide(index)}
-                sx={{
-                  width: "100%",
-                  margin: 0,
-                  padding: 0,
-                  boxSizing: "border-box",
+              <Box
+                style={{
+                  padding: "20px",
+                  width: "50%",
+                  margin: "auto",
                 }}
               >
-                {proposals.map((proposal, index) => (
-                  <Card
-                    key={index}
-                    variant="outlined"
-                    sx={{
-                      borderColor: (theme) => theme.palette.background.outline,
-                      width: "100%",
-                      m: 0,
-                      p: 0,
-                      boxSizing: "border-box",
-                      borderRadius: "8px",
-                      backgroundColor: (theme) =>
-                        theme.palette.background.container,
-                    }}
-                  >
-                    <CardContent
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        paddingBottom: 0,
-                        marginBottom: 0,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          flexBasis: "0",
-                          flexGrow: 1,
-                        }}
-                      >
-                        <Typography variant="h1">{proposal.title}</Typography>
-                        {isOwner && (
-                          <Box
-                            sx={{
-                              position: "relative",
-                              bottom: 0,
-                              right: 0,
-                              zIndex: 10000,
-                            }}
-                          >
-                            <IconButton
-                              onClick={() => removeProposal(index)}
-                              sx={{
-                                height: "48px",
-                                color: (theme) => theme.palette.primary.remove,
-                                width: "48px",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <DeleteIcon sx={{ fontSize: "25px" }} />
-                            </IconButton>
-                          </Box>
-                        )}
-                      </Box>
-                    </CardContent>
+                <Box
+                  component="img"
+                  src="/logo.png"
+                  alt="Your Logo"
+                  sx={{
+                    display: "block",
+                    width: "115px",
+                    height: "auto",
+                    objectFit: "contain",
+                    mt: -1,
+                    mb: 3,
+                  }}
+                />
+                <Typography
+                  variant="h1"
+                  sx={{
+                    textAlign: "center",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexBasis: "0",
+                    flexGrow: 1,
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  No proposals
+                </Typography>
+              </Box>
+            </Box>
+          )}
 
-                    <CardContent>
-                      <Typography variant="body">
-                        {proposal.description}
-                      </Typography>
-                    </CardContent>
-                    <CardActions
+          {isConnected && proposals.length > 0 && contractExists && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "70vh",
+                overflow: "hidden",
+                mt: "-30px",
+              }}
+            >
+              <Box
+                sx={{
+                  overflow: "visible",
+                  boxShadow: "0px 0px 20px 3px rgba(118,219,205, .45)",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  padding: "0 !important",
+                  borderRadius: "8px",
+                  width: "80%",
+                  maxWidth: "500px",
+                }}
+              >
+                <Carousel
+                  autoPlay={false}
+                  indicators={false}
+                  index={currentSlide}
+                  onChange={(index) => setCurrentSlide(index)}
+                  sx={{
+                    width: "100%",
+                    margin: 0,
+                    padding: 0,
+                    boxSizing: "border-box",
+                  }}
+                >
+                  {proposals.map((proposal, index) => (
+                    <Card
+                      key={index}
+                      variant="outlined"
                       sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        position: "relative",
+                        borderColor: (theme) =>
+                          theme.palette.background.outline,
+                        width: "100%",
+                        m: 0,
+                        p: 0,
+                        boxSizing: "border-box",
+                        borderRadius: "8px",
+                        backgroundColor: (theme) =>
+                          theme.palette.background.container,
                       }}
                     >
-                      <Box
+                      <CardContent
                         sx={{
                           display: "flex",
+                          justifyContent: "space-between",
                           alignItems: "center",
-                          fontWeight: 600,
+                          paddingBottom: 0,
+                          marginBottom: 0,
                         }}
                       >
-                        <LocalFireDepartmentIcon
-                          sx={{ color: "#fc9847", marginLeft: "5px" }}
-                        />
-                        <Typography
-                          variant="h2"
+                        <Box
                           sx={{
-                            color: "#fc9847",
-                            marginLeft: "5px",
-                            fontSize: "15px",
+                            display: "flex",
+                            alignItems: "center",
+                            flexBasis: "0",
+                            flexGrow: 1,
                           }}
                         >
-                          {proposal.voteCount.toString()}
-                        </Typography>
-                      </Box>
+                          <Typography variant="h1">{proposal.title}</Typography>
+                          {isOwner && (
+                            <Box
+                              sx={{
+                                position: "relative",
+                                bottom: 0,
+                                right: 0,
+                                zIndex: 10000,
+                              }}
+                            >
+                              <IconButton
+                                onClick={() => removeProposal(index)}
+                                sx={{
+                                  height: "48px",
+                                  color: (theme) =>
+                                    theme.palette.primary.remove,
+                                  width: "48px",
+                                  borderRadius: "50%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <DeleteIcon sx={{ fontSize: "25px" }} />
+                              </IconButton>
+                            </Box>
+                          )}
+                        </Box>
+                      </CardContent>
 
-                      <ShimmerButton
-                        variant="contained"
-                        onClick={() => vote(index)}
-                        disabled={votingStatus[index]}
+                      <CardContent>
+                        <Typography variant="body">
+                          {proposal.description}
+                        </Typography>
+                      </CardContent>
+                      <CardActions
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          position: "relative",
+                        }}
                       >
-                        {votingStatus[index] ? (
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            fontWeight: 600,
+                          }}
+                        >
+                          <LocalFireDepartmentIcon
+                            sx={{ color: "#fc9847", marginLeft: "5px" }}
+                          />
                           <Typography
+                            variant="h2"
                             sx={{
-                              color: (theme) => theme.palette.primary.disabled,
+                              color: "#fc9847",
+                              marginLeft: "5px",
+                              fontSize: "15px",
                             }}
                           >
-                            Voted
+                            {proposal.voteCount.toString()}
                           </Typography>
-                        ) : (
-                          <Typography
-                            sx={{
-                              color: (theme) =>
-                                theme.palette.primary.contrastText,
-                            }}
-                          >
-                            Vote
-                          </Typography>
-                        )}
-                      </ShimmerButton>
-                    </CardActions>
-                  </Card>
-                ))}
-              </Carousel>
-            </Container>
+                        </Box>
+
+                        <ShimmerButton
+                          variant="contained"
+                          onClick={() => vote(index)}
+                          disabled={votingStatus[index]}
+                        >
+                          {votingStatus[index] ? (
+                            <Typography
+                              sx={{
+                                color: (theme) =>
+                                  theme.palette.primary.disabled,
+                              }}
+                            >
+                              Voted
+                            </Typography>
+                          ) : (
+                            <Typography
+                              sx={{
+                                color: (theme) =>
+                                  theme.palette.primary.contrastText,
+                              }}
+                            >
+                              Vote
+                            </Typography>
+                          )}
+                        </ShimmerButton>
+                      </CardActions>
+                    </Card>
+                  ))}
+                </Carousel>
+              </Box>
+            </Box>
           )}
         </Container>
       </Stack>
@@ -504,9 +656,25 @@ function VotingComponent() {
             <Button onClick={handleAdd}>Add</Button>
           </DialogActions>
         </Dialog>
-
-        <GradientFab openDialog={openDialog} isOwner={isOwner} />
       </Container>
+
+      {isConnected && contractExists && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: "20px",
+            left: "20px",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h1" sx={{ fontSize: "18px", mb: "10px" }}>
+            zakraicik.xyz
+          </Typography>
+          <GradientFab openDialog={openDialog} isOwner={isOwner} />
+        </Box>
+      )}
 
       <Snackbar
         open={snackbarOpen}

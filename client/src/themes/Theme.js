@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-const darkTheme = createTheme({
+const Theme = createTheme({
   typography: {
     fontFamily: "Roboto, sans-serif",
     h1: {
@@ -94,4 +94,4 @@ const darkTheme = createTheme({
   },
 });
 
-export default darkTheme;
+export default Theme;

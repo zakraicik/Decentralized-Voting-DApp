@@ -9,7 +9,7 @@ function ConnectedStatus({ isConnected, signerAddress }) {
   const connectedColor1 = theme.palette.primary.light;
   const connectedColor2 = theme.palette.primary.dark;
   const disconnectedColor1 = theme.palette.disconnected.main;
-  const discconnectedColor2 = theme.palette.disconnected.light;
+  const disconnectedColor2 = theme.palette.disconnected.light;
 
   return (
     <div
@@ -25,9 +25,11 @@ function ConnectedStatus({ isConnected, signerAddress }) {
           <Box sx={{ marginLeft: "6px" }}>
             <Stack>
               <Typography variant="h2">CONNECTED</Typography>
-              <Typography variant="caption">
-                {signerAddress.slice(0, 6)}...{signerAddress.slice(-4)}
-              </Typography>
+              {signerAddress && (
+                <Typography variant="caption">
+                  {signerAddress.slice(0, 6)}...{signerAddress.slice(-4)}
+                </Typography>
+              )}
             </Stack>
           </Box>
         </>
@@ -35,7 +37,7 @@ function ConnectedStatus({ isConnected, signerAddress }) {
         <>
           <StatusLight
             color1={disconnectedColor1}
-            color2={discconnectedColor2}
+            color2={disconnectedColor2}
           />
           <Box sx={{ marginLeft: "6px" }}>
             <Typography variant="disconnected">DISCONNECTED</Typography>

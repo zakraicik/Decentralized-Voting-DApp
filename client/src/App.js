@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from "react";
 import VotingComponent from "./components/VotingComponent";
 import SetUpStepper from "./components/SetUpStepper";
-import {
-  CssBaseline,
-  ThemeProvider,
-  Box,
-  Switch,
-  Typography,
-} from "@mui/material";
-import lightTheme from "./themes/LightTheme";
-import darkTheme from "./themes/DarkTheme";
+import { CssBaseline, ThemeProvider, Box } from "@mui/material";
+import Theme from "./themes/Theme";
 
 function App() {
-  const [isDark, setIsDark] = useState(true);
   const [isWeb3BrowserDetected, setIsWeb3BrowserDetected] = useState(false);
-
-  console.log(isWeb3BrowserDetected);
-  const handleThemeChange = () => {
-    setIsDark(!isDark);
-  };
 
   useEffect(() => {
     if (typeof window.ethereum !== "undefined") {
@@ -29,7 +16,7 @@ function App() {
   }, []);
 
   return (
-    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+    <ThemeProvider theme={Theme}>
       {!isWeb3BrowserDetected ? (
         <Box
           sx={{
@@ -80,19 +67,7 @@ function App() {
                 gap: "8px",
                 p: 2,
               }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  width: "100px",
-                }}
-              >
-                <Typography variant="caption">Dark Mode</Typography>
-                <Switch checked={isDark} onChange={handleThemeChange} />
-              </Box>
-            </Box>
+            ></Box>
           </Box>
         </Box>
       )}
