@@ -1,18 +1,15 @@
-import React, { useState, } from "react";
+import React from "react";
 import VotingComponent from "./components/VotingComponent";
 import {
   CssBaseline,
   ThemeProvider,
   Box,
-  Switch,
-  Typography,
 } from "@mui/material";
 
-import lightTheme from "./themes/LightTheme";
-import darkTheme from "./themes/DarkTheme";
+import Theme from "./themes/Theme";
 import '@rainbow-me/rainbowkit/styles.css';
 import { Buffer } from 'buffer';
-import { getDefaultWallets, RainbowKitProvider, midnightTheme } from '@rainbow-me/rainbowkit';
+import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { mainnet, localhost, goerli } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
@@ -45,21 +42,16 @@ const wagmiConfig = createConfig({
 });
 
 function App() {
-  const [isDark, setIsDark] = useState(true);
 
-  const handleThemeChange = () => {
-    setIsDark(!isDark);
-  };
 
 
 
   return (
-    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+    <ThemeProvider theme={Theme}>
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider
-          theme={midnightTheme()}
-          chains={chains}
 
+          chains={chains}
         >
           <Box>
             <CssBaseline />
@@ -90,8 +82,6 @@ function App() {
                     width: "100px",
                   }}
                 >
-                  <Typography variant="caption">Dark Mode</Typography>
-                  <Switch checked={isDark} onChange={handleThemeChange} />
                 </Box>
               </Box>
             </Box>

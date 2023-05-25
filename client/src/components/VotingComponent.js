@@ -224,10 +224,7 @@ function VotingComponent() {
             zIndex: 9999,
           }}
         >
-          <Box sx={{
-            borderRadius: "10px",
-            boxShadow: "0px 0px 17px 3px rgba(118,219,205, .45)",
-          }}>
+          <Box >
             <ConnectButton accountStatus="address" chainStatus="none" showBalance={true} />
 
           </Box>

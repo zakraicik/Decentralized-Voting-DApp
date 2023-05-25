@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-const darkTheme = createTheme({
+const Theme = createTheme({
   typography: {
     fontFamily: "Roboto, sans-serif",
     h1: {
@@ -16,16 +16,9 @@ const darkTheme = createTheme({
       fontWeight: 700,
       lineHeight: "1",
     },
-    h3: {
-      color: "#37b78c",
-      fontSize: "16px",
-      letterSpacing: "0.1em",
-
-      fontWeight: 600,
-    },
     body: {
       fontSize: "16px",
-      color: "#fff",
+      color: "#505762",
       fontWeight: 400,
     },
     caption: {
@@ -48,7 +41,7 @@ const darkTheme = createTheme({
       dark: "#2b8752",
       contrastText: "#ffffff",
       remove: "#8a8e94",
-      disabled: "#D3D3D3",
+      disabled: "#666666",
     },
     secondary: {
       main: "#505762",
@@ -57,8 +50,8 @@ const darkTheme = createTheme({
       contrastText: "#ffffff",
     },
     background: {
-      default: "#000000",
-      container: "#000000",
+      default: "#ffffff",
+      dark: "#000000",
       outline: "rgba(115, 202, 164, .6)",
     },
     disconnected: {
@@ -74,14 +67,6 @@ const darkTheme = createTheme({
         },
       },
     },
-    MuiDialog: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#505762",
-          color: "#fff",
-        },
-      },
-    },
     MuiStepLabel: {
       styleOverrides: {
         label: {
@@ -94,4 +79,4 @@ const darkTheme = createTheme({
   },
 });
 
-export default darkTheme;
+export default Theme;
