@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, } from "react";
 import VotingComponent from "./components/VotingComponent";
-import SetUpStepper from "./components/SetUpStepper";
 import {
   CssBaseline,
   ThemeProvider,
@@ -8,94 +7,97 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
+
 import lightTheme from "./themes/LightTheme";
 import darkTheme from "./themes/DarkTheme";
+import '@rainbow-me/rainbowkit/styles.css';
+import { Buffer } from 'buffer';
+import { getDefaultWallets, RainbowKitProvider, midnightTheme } from '@rainbow-me/rainbowkit';
+import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { mainnet, localhost, goerli } from 'wagmi/chains';
+import { publicProvider } from 'wagmi/providers/public';
+
+window.global = window.global ?? window;
+window.Buffer = window.Buffer ?? Buffer;
+window.process = window.process ?? { env: {} };
+
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  [
+    mainnet,
+    localhost,
+    ...(process.env.REACT_APP_ENABLE_TESTNETS === 'true' ? [goerli] : []),
+  ],
+  [publicProvider()]
+);
+
+const { connectors } = getDefaultWallets({
+  appName: 'RainbowKit demo',
+  projectId: 'P05ecb9a7ba743c4488b4c8a8a176d6d5',
+  chains,
+});
+
+const wagmiConfig = createConfig({
+  autoConnect: true,
+  connectors,
+  publicClient,
+  webSocketPublicClient,
+});
 
 function App() {
   const [isDark, setIsDark] = useState(true);
-  const [isWeb3BrowserDetected, setIsWeb3BrowserDetected] = useState(false);
 
-  console.log(isWeb3BrowserDetected);
   const handleThemeChange = () => {
     setIsDark(!isDark);
   };
 
-  useEffect(() => {
-    if (typeof window.ethereum !== "undefined") {
-      setIsWeb3BrowserDetected(true);
-    } else {
-      setIsWeb3BrowserDetected(false);
-    }
-  }, []);
+
 
   return (
     <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-      {!isWeb3BrowserDetected ? (
-        <Box
-          sx={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            px: 4,
-            pt: 3,
-          }}
-        >
-          <CssBaseline />
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider
+          theme={midnightTheme()}
+          chains={chains}
 
-          <Box
-            component="img"
-            src="/logo.png"
-            alt="Your Logo"
-            sx={{
-              display: "block",
-              width: "115px",
-              height: "auto",
-              objectFit: "contain",
-              mt: 0,
-              mb: 4,
-            }}
-          />
-          <SetUpStepper />
-        </Box>
-      ) : (
-        <Box>
-          <CssBaseline />
-          <Box
-            sx={{
-              minHeight: "100vh",
-              position: "relative",
-            }}
-          >
-            <VotingComponent />
+        >
+          <Box>
+            <CssBaseline />
             <Box
               sx={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                gap: "8px",
-                p: 2,
+                minHeight: "100vh",
+                position: "relative",
               }}
             >
+              <VotingComponent />
               <Box
                 sx={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
-                  width: "100px",
+                  gap: "8px",
+                  p: 2,
                 }}
               >
-                <Typography variant="caption">Dark Mode</Typography>
-                <Switch checked={isDark} onChange={handleThemeChange} />
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    width: "100px",
+                  }}
+                >
+                  <Typography variant="caption">Dark Mode</Typography>
+                  <Switch checked={isDark} onChange={handleThemeChange} />
+                </Box>
               </Box>
             </Box>
           </Box>
-        </Box>
-      )}
+        </RainbowKitProvider>
+      </WagmiConfig>
     </ThemeProvider>
   );
 }

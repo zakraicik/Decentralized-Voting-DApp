@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers, Contract } from "ethers";
+
 import contractABI from "../contracts/VotingSystem.json";
 import {
   Container,
@@ -23,24 +24,23 @@ import {
   LocalFireDepartment as LocalFireDepartmentIcon,
 } from "@mui/icons-material";
 import Carousel from "react-material-ui-carousel";
-import ConnectedStatus from "./ConnectedStatus";
-import Balance from "./Balance";
 import ShimmerButton from "./ShimmerButton";
 import GradientFab from "./GradientFab";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { useDialog } from "../hooks/useDialog";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 function VotingComponent() {
   const [contract, setContract] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+
   const [proposals, setProposals] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [signerAddress, setSignerAddress] = useState(null);
-  const [accountBalance, setAccountBalance] = useState("");
   const [votingStatus, setVotingStatus] = useState({});
   const [currentSlide, setCurrentSlide] = useState(0);
+
 
   const { snackbarOpen, snackbarMessage, openSnackbar, closeSnackbar } =
     useSnackbar();
@@ -53,50 +53,53 @@ function VotingComponent() {
 
   useEffect(() => {
     async function refreshData() {
+
       const provider = new ethers.BrowserProvider(window.ethereum);
 
       if (provider) {
         try {
-          const signer = await provider.getSigner();
-          const signerAddress = await signer.getAddress();
-          setSignerAddress(signerAddress);
 
-          const balance = await provider.getBalance(signerAddress);
+          const accounts = await provider.listAccounts();
 
-          setAccountBalance(ethers.formatEther(balance));
+          if (accounts.length > 0) {
 
-          const contract = new Contract(
-            "0x6567c84fDf23c0a54585320a9a9048EA8a45eB37",
-            contractABI.abi,
-            signer
-          );
-          const owner = await contract.owner();
+            const signer = await provider.getSigner();
+            const signerAddress = await signer.getAddress();
+            setSignerAddress(signerAddress);
 
-          setIsOwner(signerAddress === owner);
-          setContract(contract);
-
-          const count = await contract.getProposalsCount();
-          const proposals = [];
-          const votingStatus = {};
-          for (let i = 0; i < count; i++) {
-            const proposal = await contract.getProposal(i);
-            proposals.push(proposal);
-            const hasUserVotedForProposal = await contract.hasVoted(
-              i,
-              signerAddress
+            const contract = new Contract(
+              "0xEa3B222f4cB625a64937323a21fA73ec7A24A0d9",
+              contractABI.abi,
+              signer
             );
-            votingStatus[i] = hasUserVotedForProposal;
+
+            const owner = await contract.owner();
+
+            setIsOwner(signerAddress === owner);
+            setContract(contract);
+
+            const count = await contract.getProposalsCount();
+            const proposals = [];
+            const votingStatus = {};
+            for (let i = 0; i < count; i++) {
+              const proposal = await contract.getProposal(i);
+              proposals.push(proposal);
+              const hasUserVotedForProposal = await contract.hasVoted(
+                i,
+                signerAddress
+              );
+              votingStatus[i] = hasUserVotedForProposal;
+            }
+            setVotingStatus(votingStatus);
+            setProposals(proposals);
           }
-          setVotingStatus(votingStatus);
-          setProposals(proposals);
-          setIsConnected(true);
+
         } catch (err) {
           console.log(err);
-          setIsConnected(false);
+
         }
       } else {
-        console.error("Please install MetaMask!");
-        setIsConnected(false);
+        console.error("Connect Wallet");
       }
     }
 
@@ -221,13 +224,13 @@ function VotingComponent() {
             zIndex: 9999,
           }}
         >
-          <Box>
-            <ConnectedStatus
-              isConnected={isConnected}
-              signerAddress={signerAddress}
-            />
+          <Box sx={{
+            borderRadius: "10px",
+            boxShadow: "0px 0px 17px 3px rgba(118,219,205, .45)",
+          }}>
+            <ConnectButton accountStatus="address" chainStatus="none" showBalance={true} />
+
           </Box>
-          {isConnected && <Balance accountBalance={accountBalance} />}
         </Box>
 
         <Container
