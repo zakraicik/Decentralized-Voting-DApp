@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ethers, Contract } from "ethers";
 import contractABI from "../contracts/VotingSystem.json";
 import {
@@ -30,8 +30,6 @@ import GradientFab from "./GradientFab";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { useDialog } from "../hooks/useDialog";
 
-
-
 function VotingComponent() {
   const [contract, setContract] = useState(null);
   const [contractExists, setContractExists] = useState(false);
@@ -55,99 +53,103 @@ function VotingComponent() {
     closeDialog();
   };
 
-  useEffect(() => {
-    async function refreshData() {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const network = await provider.getNetwork();
+  const refreshData = useCallback(async () => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await provider.getNetwork();
 
-      if (provider) {
-        try {
-          const accounts = await provider.listAccounts();
+    if (provider) {
+      try {
+        const accounts = await provider.listAccounts();
 
-          if (accounts.length > 0) {
+        if (accounts.length > 0) {
+          setIsConnected(true);
 
-            setIsConnected(true);
-
-            if (network.chainId !== 11155111n) {
-              setContractExists(false);
-              console.error(`Wrong network, please switch to network with chainId 11155111`);
-              return;
-            }
-
-            const signer = await provider.getSigner();
-            const signerAddress = await signer.getAddress();
-            setSignerAddress(signerAddress);
-
-            const balance = await provider.getBalance(signerAddress);
-
-            setAccountBalance(ethers.formatEther(balance));
-
-            try {
-              const contract = new Contract(
-                "0x17dBBFd12DF76BDad1852E6F4208D0257ccE5892",
-                contractABI.abi,
-                signer
-              );
-
-              const owner = await contract.owner();
-
-              setIsOwner(signerAddress === owner);
-              setContract(contract);
-              setContractExists(true);
-
-              const count = await contract.getProposalsCount();
-              const proposalFetches = [];
-              const voteFetches = [];
-
-              for (let i = 0; i < count; i++) {
-                proposalFetches.push(contract.getProposal(i));
-                voteFetches.push(contract.hasVoted(i, signerAddress));
-              }
-
-              const proposals = await Promise.all(proposalFetches);
-              const votes = await Promise.all(voteFetches);
-
-              const votingStatus = votes.reduce(
-                (acc, voted, i) => ({ ...acc, [i]: voted }),
-                {}
-              );
-
-              contract.on("Voted", (index, voter, event) => {
-                refreshData();
-              });
-
-              setVotingStatus(votingStatus);
-              setProposals(proposals);
-
-            } catch (err) {
-              setContractExists(false);
-            }
-          } else {
-            setIsConnected(false);
-            setAccountBalance(null);
-            setIsOwner(false);
-            setContractExists(false)
+          if (network.chainId !== 11155111n) {
+            setContractExists(false);
+            console.error(`Wrong network, please switch to network with chainId 11155111`);
+            return;
           }
-        } catch (err) {
+
+          const signer = await provider.getSigner();
+          const signerAddress = await signer.getAddress();
+          setSignerAddress(signerAddress);
+
+          const balance = await provider.getBalance(signerAddress);
+          setAccountBalance(ethers.formatEther(balance));
+
+          try {
+            const contract = new Contract(
+              "0x17dBBFd12DF76BDad1852E6F4208D0257ccE5892",
+              contractABI.abi,
+              signer
+            );
+
+            const owner = await contract.owner();
+            setIsOwner(signerAddress === owner);
+            setContract(contract);
+            setContractExists(true);
+
+            const count = await contract.getProposalsCount();
+            const proposalFetches = [];
+            const voteFetches = [];
+
+            for (let i = 0; i < count; i++) {
+              proposalFetches.push(contract.getProposal(i));
+              voteFetches.push(contract.hasVoted(i, signerAddress));
+            }
+
+            const proposals = await Promise.all(proposalFetches);
+            const votes = await Promise.all(voteFetches);
+
+            const votingStatus = votes.reduce(
+              (acc, voted, i) => ({ ...acc, [i]: voted }),
+              {}
+            );
+
+            setVotingStatus(votingStatus);
+            setProposals(proposals);
+
+          } catch (err) {
+            setContractExists(false);
+          }
+        } else {
           setIsConnected(false);
+          setAccountBalance(null);
+          setIsOwner(false);
+          setContractExists(false)
         }
-      } else {
-        console.error("Please install MetaMask!");
+      } catch (err) {
         setIsConnected(false);
       }
+    } else {
+      console.error("Please install MetaMask!");
+      setIsConnected(false);
     }
+  }, [setIsConnected, setSignerAddress, setAccountBalance, setIsOwner, setContract, setContractExists, setVotingStatus, setProposals]); // Add any other dependencies here...
 
+  useEffect(() => {
     refreshData();
 
-    window.ethereum.on("accountsChanged", function (accounts) {
-      refreshData();
-    });
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", refreshData);
+      window.ethereum.on('chainChanged', refreshData);
 
-    window.ethereum.on('chainChanged', function (chainId) {
-      refreshData();
-    });
+      return () => {
+        window.ethereum.removeListener("accountsChanged", refreshData);
+        window.ethereum.removeListener("chainChanged", refreshData);
+      };
+    }
+  }, [refreshData]);
 
-  }, []);
+  useEffect(() => {
+    if (contract) {
+      contract.on("Voted", refreshData);
+
+      return () => {
+        contract.removeListener("Voted", refreshData);
+      };
+    }
+  }, [contract, refreshData]);
 
   async function connectWallet() {
     if (window.ethereum) {
