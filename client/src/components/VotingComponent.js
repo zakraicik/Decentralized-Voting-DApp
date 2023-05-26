@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+
 import { ethers, Contract } from "ethers";
 import contractABI from "../contracts/VotingSystem.json";
 import {
@@ -42,6 +43,7 @@ function VotingComponent() {
   const [accountBalance, setAccountBalance] = useState("");
   const [votingStatus, setVotingStatus] = useState({});
   const [currentSlide, setCurrentSlide] = useState(0);
+
 
   const { snackbarOpen, snackbarMessage, openSnackbar, closeSnackbar } =
     useSnackbar();
