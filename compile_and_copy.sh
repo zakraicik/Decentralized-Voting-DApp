@@ -3,7 +3,7 @@
 # Compile the contracts
 npx truffle compile
 
-npx truffle migrate --reset
+npx truffle migrate --network development --reset
 
 npx truffle test
 

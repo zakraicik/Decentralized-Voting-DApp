@@ -30,6 +30,8 @@ import GradientFab from "./GradientFab";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { useDialog } from "../hooks/useDialog";
 
+
+
 function VotingComponent() {
   const [contract, setContract] = useState(null);
   const [contractExists, setContractExists] = useState(false);
@@ -45,6 +47,7 @@ function VotingComponent() {
 
   const { snackbarOpen, snackbarMessage, openSnackbar, closeSnackbar } =
     useSnackbar();
+
   const { dialogOpen, openDialog, closeDialog } = useDialog();
 
   const handleAdd = () => {
@@ -55,13 +58,21 @@ function VotingComponent() {
   useEffect(() => {
     async function refreshData() {
       const provider = new ethers.BrowserProvider(window.ethereum);
+      const network = await provider.getNetwork();
 
       if (provider) {
         try {
           const accounts = await provider.listAccounts();
 
           if (accounts.length > 0) {
+
             setIsConnected(true);
+
+            if (network.chainId !== 11155111n) {
+              setContractExists(false);
+              console.error(`Wrong network, please switch to network with chainId 11155111`);
+              return;
+            }
 
             const signer = await provider.getSigner();
             const signerAddress = await signer.getAddress();
@@ -82,6 +93,7 @@ function VotingComponent() {
 
               setIsOwner(signerAddress === owner);
               setContract(contract);
+              setContractExists(true);
 
               const count = await contract.getProposalsCount();
               const proposalFetches = [];
@@ -100,20 +112,23 @@ function VotingComponent() {
                 {}
               );
 
+              contract.on("Voted", (index, voter, event) => {
+                refreshData();
+              });
+
               setVotingStatus(votingStatus);
               setProposals(proposals);
-              setContractExists(true);
+
             } catch (err) {
               setContractExists(false);
             }
           } else {
             setIsConnected(false);
-            setSignerAddress(null);
             setAccountBalance(null);
             setIsOwner(false);
+            setContractExists(false)
           }
         } catch (err) {
-          console.log(err);
           setIsConnected(false);
         }
       } else {
@@ -131,6 +146,7 @@ function VotingComponent() {
     window.ethereum.on('chainChanged', function (chainId) {
       refreshData();
     });
+
   }, []);
 
   async function connectWallet() {
@@ -314,7 +330,7 @@ function VotingComponent() {
                       color: (theme) => theme.palette.primary.contrastText,
                     }}
                   >
-                    Connect{" "}
+                    Connect
                   </Typography>
                 </ShimmerButton>
               </Box>
@@ -547,7 +563,7 @@ function VotingComponent() {
                                   theme.palette.primary.disabled,
                               }}
                             >
-                              Voted
+                              Agreed
                             </Typography>
                           ) : (
                             <Typography
@@ -556,7 +572,7 @@ function VotingComponent() {
                                   theme.palette.primary.contrastText,
                               }}
                             >
-                              Vote
+                              I agree
                             </Typography>
                           )}
                         </ShimmerButton>
